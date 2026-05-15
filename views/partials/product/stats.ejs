@@ -1,0 +1,46 @@
+<div class="card">
+    <div class="header">
+        <h2>📊 THỐNG KÊ SẢN PHẨM</h2>
+    </div>
+
+    <div class="body table-responsive">
+        <table class="table table-bordered table-hover">
+
+            <thead>
+                <tr>
+                    <th>Mã SP</th>
+                    <th>Tên</th>
+                    <th>Tồn kho</th>
+                    <th>Đã bán</th>
+                    <th>Doanh thu</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% stats.forEach(p => { %>
+                    <tr>
+                        <td><%= p.productCode %></td>
+                        <td><%= p.name %></td>
+
+                        <td>
+                            <span class="badge bg-blue">
+                                <%= p.stock %>
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-green">
+                                <%= p.sold %>
+                            </span>
+                        </td>
+
+                        <td style="color:red;">
+                            <%= p.revenue.toLocaleString() %>₫
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+
+        </table>
+    </div>
+</div>

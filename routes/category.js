@@ -1,73 +1,214 @@
 var express = require('express');
 var router = express.Router();
+
 const Category = require('../models/category');
 
-router.get('',function(req,res,next){
-    let page = (typeof req.query.page != 'undefined')?req.query.page:1;
-    console.log(page);
-    let pageSize = 5;
-    Category.find().skip((page-1)*pageSize).limit(pageSize).exec((err,categories)=>{
-        Category.countDocuments((err,count)=>{   
-            if(err) return next(err);
-            res.render('partials/cate/table',{
-                categories:categories,
-                current:page,
-                pages:Math.ceil(count/pageSize)
-            })
-        })
-    })
-})
-router.get("/add", async function (req, res) {
-    res.render('partials/cate/add');
-})
-router.get("/detail/:id", async function (req, res) {
-    const id = req.params.id;
-    const category = await Category.findOne({_id:id});
-    res.render('partials/cate/detail',{category:category});
-})
-router.post("/add",function(req,res){
-    let category = new Category({
-        code: getRandomString(6),
-        group: req.body.group,
-        type: req.body.type,
-        image: req.body.image,
-        isactive: req.body.isactive
-    })
-    category.save().then(result => {
-        console.log(result);
-        res.send('upload suscess !')
-    }).catch(err=>{
-        console.log(err);
-        res.send('upload Failed !')
-    })
-})
-router.put("/update/:id", async function (req, res) {
-    let id = req.params._id;
+/* ================= LIST ================= */
+router.get('/', async function (req, res) {
+
+    let page = req.query.page
+        ? parseInt(req.query.page)
+        : 1;
+
+    let pageSize = 6;
+
+    let keyword = req.query.keyword || '';
+
+    let query = {};
+
+    // 🔥 SEARCH
+    if (keyword.trim() !== '') {
+
+        query.group = {
+            $regex: keyword,
+            $options: 'i'
+        };
+
+    }
+
     try {
-        await Category.updateOne({_id: id }, {
-            $set: {
-                group: req.body.group,
-                type: req.body.type,
-                image: req.body.image,
-                isactive: req.body.isactive
+
+        const categories = await Category.find(query)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
+
+        const count =
+            await Category.countDocuments(query);
+
+        res.render('partials/category/table', {
+
+            categories,
+
+            current: page,
+
+            pages: Math.ceil(count / pageSize),
+
+            keyword
+
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.send("Error");
+
+    }
+
+});
+
+
+/* ================= ADD PAGE ================= */
+router.get('/add', function (req, res) {
+
+    res.render('partials/category/add');
+
+});
+
+
+/* ================= DETAIL ================= */
+router.get('/detail/:id', async function (req, res) {
+
+    try {
+
+        const category =
+            await Category.findById(req.params.id);
+
+        if (!category) {
+            return res.send("Category not found");
+        }
+
+        res.render('partials/category/detail', {
+            category
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.send("Error");
+
+    }
+
+});
+
+
+/* ================= ADD ================= */
+router.post('/add', async function (req, res) {
+
+    try {
+
+        let category = new Category({
+
+            code: getRandomString(6),
+
+            group: req.body.group,
+
+            type: req.body.type,
+
+            image: req.body.image,
+
+            isactive: req.body.isactive === 'true'
+
+        });
+
+        await category.save();
+
+        res.send('Create category success!');
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500)
+            .send('Create category failed!');
+
+    }
+
+});
+
+
+/* ================= UPDATE ================= */
+router.put('/update/:id', async function (req, res) {
+
+    try {
+
+        await Category.updateOne(
+
+            { _id: req.params.id },
+
+            {
+                $set: {
+
+                    group: req.body.group,
+
+                    type: req.body.type,
+
+                    image: req.body.image,
+
+                    isactive: req.body.isactive === 'true'
+
+                }
             }
-        })
-        res.send('update suscess');
-    } catch (error) {
-        res.send('update failed !');
+
+        );
+
+        res.send('Update success!');
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500)
+            .send('Update failed!');
+
     }
-})
-router.get("/test/:code",async function(req,res){
-    const code = req.params.code;
-    var cate = await Category.findOne({code:code});
-    res.send(cate);
-})
+
+});
+
+
+/* ================= DELETE ================= */
+router.delete('/delete/:id', async function (req, res) {
+
+    try {
+
+        await Category.deleteOne({
+            _id: req.params.id
+        });
+
+        res.send("Delete success!");
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500)
+            .send("Delete failed!");
+
+    }
+
+});
+
+
+/* ================= HELPER ================= */
 function getRandomString(length) {
-    var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    var chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
     var result = '';
-    for ( var i = 0; i < length; i++ ) {
-        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+
+    for (var i = 0; i < length; i++) {
+
+        result += chars.charAt(
+            Math.floor(Math.random() * chars.length)
+        );
+
     }
+
     return result;
-  }
+
+}
+
 module.exports = router;

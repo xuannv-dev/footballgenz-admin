@@ -1,0 +1,283 @@
+<div class="row clearfix">
+
+    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- ================= HEADER ================= -->
+
+            <div class="header">
+
+                <h2>
+                    🔄 TẠO YÊU CẦU ĐỔI TRẢ / HẬU MÃI
+                </h2>
+
+            </div>
+
+            <!-- ================= BODY ================= -->
+
+            <div class="body">
+
+                <!-- ORDER CODE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Mã đơn hàng
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="orderCode"
+
+                        class="form-control"
+
+                        placeholder="Ví dụ: ORD001"
+                    >
+
+                    <small
+                        style="
+                            color:#999;
+                        ">
+
+                        Nhập mã đơn hàng khách cần hỗ trợ
+
+                    </small>
+
+                </div>
+
+                <!-- CUSTOMER -->
+
+                <div class="form-group">
+
+                    <label>
+                        Tên khách hàng
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="customerName"
+
+                        class="form-control"
+
+                        placeholder="Ví dụ: Nguyễn Văn A"
+                    >
+
+                </div>
+
+                <!-- RETURN TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Loại yêu cầu
+                    </label>
+
+                    <select
+                        id="returnType"
+                        class="form-control">
+
+                        <option value="1">
+                            Đổi size
+                        </option>
+
+                        <option value="2">
+                            Sản phẩm lỗi
+                        </option>
+
+                        <option value="3">
+                            Không đúng mô tả
+                        </option>
+
+                        <option value="4">
+                            Hoàn tiền
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- REASON -->
+
+                <div class="form-group">
+
+                    <label>
+                        Lý do đổi trả
+                    </label>
+
+                    <textarea
+
+                        id="reason"
+
+                        class="form-control"
+
+                        rows="5"
+
+                        placeholder="Ví dụ: Sản phẩm bị lỗi đường may, khách muốn đổi size M..."></textarea>
+
+                </div>
+
+                <!-- NOTE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ghi chú admin
+                    </label>
+
+                    <textarea
+
+                        id="adminNote"
+
+                        class="form-control"
+
+                        rows="3"
+
+                        placeholder="Ví dụ: Đã tiếp nhận yêu cầu từ khách hàng..."></textarea>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button
+                    class="btn btn-success"
+                    id="btnCreateReturn">
+
+                    Tạo yêu cầu
+
+                </button>
+
+                <a
+
+                    href="/return"
+
+                    class="btn btn-default">
+
+                    Quay lại
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+window.addEventListener('load', function(){
+
+    /* =====================================================
+        CREATE REQUEST
+    ===================================================== */
+
+    $('#btnCreateReturn').click(async function(){
+
+        const data = {
+
+            orderCode:
+                $('#orderCode').val(),
+
+            customerName:
+                $('#customerName').val(),
+
+            returnType:
+                $('#returnType').val(),
+
+            reason:
+                $('#reason').val(),
+
+            adminNote:
+                $('#adminNote').val()
+
+        };
+
+        // ================= VALIDATION =================
+
+        if(!data.orderCode){
+
+            alert(
+                'Vui lòng nhập mã đơn hàng'
+            );
+
+            return;
+
+        }
+
+        if(!data.customerName){
+
+            alert(
+                'Vui lòng nhập tên khách hàng'
+            );
+
+            return;
+
+        }
+
+        if(!data.reason){
+
+            alert(
+                'Vui lòng nhập lý do đổi trả'
+            );
+
+            return;
+
+        }
+
+        // ================= CREATE =================
+
+        try{
+
+            const response =
+                await fetch('/return/add', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json'
+
+                    },
+
+                    body:
+                        JSON.stringify(data)
+
+                });
+
+            const result =
+                await response.text();
+
+            alert(result);
+
+            setTimeout(() => {
+
+                window.location.href =
+                    '/return';
+
+            }, 1000);
+
+        }
+        catch(err){
+
+            console.log(err);
+
+            alert(
+                'Create failed'
+            );
+
+        }
+
+    });
+
+});
+
+</script>

@@ -1,0 +1,345 @@
+<div class="row clearfix">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- ================= HEADER ================= -->
+
+            <div class="header">
+
+                <h2>
+                    📰 THÊM BÀI VIẾT
+                </h2>
+
+            </div>
+
+            <!-- ================= BODY ================= -->
+
+            <div class="body">
+
+                <!-- TITLE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Tiêu đề
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="title"
+
+                        class="form-control"
+
+                        placeholder="Nhập tiêu đề bài viết"
+                    >
+
+                </div>
+
+                <!-- SLUG -->
+
+                <div class="form-group">
+
+                    <label>
+                        Slug
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="slug"
+
+                        class="form-control"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- THUMBNAIL -->
+
+                <div class="form-group">
+
+                    <label>
+                        Thumbnail
+                    </label>
+
+                    <input
+
+                        type="file"
+
+                        id="thumbnailFile"
+
+                        class="form-control"
+                    >
+
+                    <br>
+
+                    <img
+
+                        id="preview"
+
+                        src="/images/no-image.jpg"
+
+                        width="180"
+
+                        style="
+                            border-radius:8px;
+                            border:1px solid #ddd;
+                        "
+                    >
+
+                </div>
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label>
+                        Mô tả ngắn
+                    </label>
+
+                    <textarea
+
+                        id="description"
+
+                        class="form-control"
+
+                        rows="3"></textarea>
+
+                </div>
+
+                <!-- CONTENT -->
+
+                <div class="form-group">
+
+                    <label>
+                        Nội dung
+                    </label>
+
+                    <textarea
+                        id="content"></textarea>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button
+                    class="btn btn-success"
+                    id="btnCreateNews">
+
+                    Thêm bài viết
+
+                </button>
+
+                <a
+
+                    href="/news"
+
+                    class="btn btn-default">
+
+                    Quay lại
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+window.addEventListener('load', function(){
+
+    let thumbnailUrl = '';
+
+    // ================= SUMMERNOTE =================
+
+    $('#content').summernote({
+
+        height: 300,
+
+        placeholder: 'Nhập nội dung bài viết...'
+
+    });
+
+    // ================= AUTO SLUG =================
+
+    $('#title').on('keyup', function(){
+
+        let slug =
+            $(this).val()
+
+            .toLowerCase()
+
+            .normalize("NFD")
+
+            .replace(/[\u0300-\u036f]/g, "")
+
+            .replace(/đ/g, "d")
+
+            .replace(/[^a-z0-9 ]/g, '')
+
+            .replace(/\s+/g, '-');
+
+        $('#slug').val(slug);
+
+    });
+
+    // ================= UPLOAD THUMBNAIL =================
+
+    $('#thumbnailFile').change(async function(){
+
+        const file =
+            this.files[0];
+
+        if(!file){
+
+            return;
+
+        }
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            'file',
+            file
+        );
+
+        formData.append(
+            'group',
+            'news'
+        );
+
+        try{
+
+            const response =
+                await fetch('/upload', {
+
+                    method: 'POST',
+
+                    body: formData
+
+                });
+
+            const result =
+                await response.text();
+
+            thumbnailUrl =
+                result;
+
+            $('#preview').attr(
+                'src',
+                result
+            );
+
+            alert(
+                'Upload thumbnail thành công'
+            );
+
+        }
+        catch(err){
+
+            console.log(err);
+
+            alert(
+                'Upload thumbnail thất bại'
+            );
+
+        }
+
+    });
+
+    // ================= CREATE NEWS =================
+
+    $('#btnCreateNews').click(async function(){
+
+        const data = {
+
+            title:
+                $('#title').val(),
+
+            slug:
+                $('#slug').val(),
+
+            thumbnail:
+                thumbnailUrl,
+
+            description:
+                $('#description').val(),
+
+            content:
+                $('#content')
+                    .summernote('code')
+
+        };
+
+        // ================= VALIDATION =================
+
+        if(!data.title){
+
+            alert(
+                'Vui lòng nhập tiêu đề'
+            );
+
+            return;
+
+        }
+
+        try{
+
+            const response =
+                await fetch('/news/add', {
+
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+
+                    body:
+                        JSON.stringify(data)
+
+                });
+
+            const result =
+                await response.text();
+
+            alert(
+                result
+            );
+
+            setTimeout(() => {
+
+                window.location.href =
+                    '/news';
+
+            }, 1000);
+
+        }
+        catch(err){
+
+            console.log(err);
+
+            alert(
+                'Create failed'
+            );
+
+        }
+
+    });
+
+});
+
+</script>

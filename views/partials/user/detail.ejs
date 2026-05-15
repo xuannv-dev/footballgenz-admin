@@ -1,0 +1,466 @@
+<%
+const money = (n) => {
+    return Number(n).toLocaleString('vi-VN') + '₫';
+}
+%>
+
+<div class="row clearfix">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- ================= HEADER ================= -->
+
+            <div class="header">
+
+                <h2>
+                    👤 CHI TIẾT NGƯỜI DÙNG
+                </h2>
+
+            </div>
+
+            <div class="body">
+
+                <!-- ================= INFO ================= -->
+
+                <div class="row clearfix">
+
+                    <!-- LEFT -->
+                    <div class="col-md-6">
+
+                        <div class="card">
+
+                            <div class="header">
+                                <h2>📄 THÔNG TIN CƠ BẢN</h2>
+                            </div>
+
+                            <div class="body">
+
+                                <p>
+                                    <b>Họ tên:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.firstname || '' %>
+                                    <%= user.lastname || '' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Email:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.email %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Số điện thoại:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.phone || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Role:</b>
+                                </p>
+
+                                <p>
+
+                                    <% if(user.role == 'ADMIN'){ %>
+
+                                        <span class="label bg-red">
+                                            ADMIN
+                                        </span>
+
+                                    <% } else { %>
+
+                                        <span class="label bg-blue">
+                                            USER
+                                        </span>
+
+                                    <% } %>
+
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Trạng thái:</b>
+                                </p>
+
+                                <p>
+
+                                    <% if(user.isActive == "true"){ %>
+
+                                        <span class="label bg-green">
+                                            Hoạt động
+                                        </span>
+
+                                    <% } else { %>
+
+                                        <span class="label bg-orange">
+                                            Đã khóa
+                                        </span>
+
+                                    <% } %>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="col-md-6">
+
+                        <div class="card">
+
+                            <div class="header">
+                                <h2>📍 ĐỊA CHỈ</h2>
+                            </div>
+
+                            <div class="body">
+
+                                <p>
+                                    <b>Quốc gia:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.address.country || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Thành phố:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.address.city || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Quận/Huyện:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.address.district || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Đường:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.address.street || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Zipcode:</b>
+                                </p>
+
+                                <p>
+                                    <%= user.address.zipcode || '---' %>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ================= STATISTICS ================= -->
+
+                <div class="row clearfix">
+
+                    <!-- TOTAL ORDER -->
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+
+                        <div class="info-box bg-cyan">
+
+                            <div class="icon">
+                                <i class="material-icons">shopping_cart</i>
+                            </div>
+
+                            <div class="content">
+
+                                <div class="text">
+                                    TỔNG ĐƠN
+                                </div>
+
+                                <div class="number">
+                                    <%= orders.length %>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- TOTAL SPENT -->
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+
+                        <div class="info-box bg-green">
+
+                            <div class="icon">
+                                <i class="material-icons">attach_money</i>
+                            </div>
+
+                            <div class="content">
+
+                                <div class="text">
+                                    TỔNG CHI TIÊU
+                                </div>
+
+                                <div class="number">
+                                    <%= money(totalSpent) %>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CREATED -->
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+
+                        <div class="info-box bg-orange">
+
+                            <div class="icon">
+                                <i class="material-icons">schedule</i>
+                            </div>
+
+                            <div class="content">
+
+                                <div class="text">
+                                    NGÀY TẠO
+                                </div>
+
+                                <div class="number" style="font-size:14px;">
+
+                                    <%= new Date(user.createdAt)
+                                        .toLocaleDateString('vi-VN') %>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ================= ORDER LIST ================= -->
+
+                <div class="card">
+
+                    <div class="header">
+
+                        <h2>
+                            🧾 ĐƠN HÀNG CỦA USER
+                        </h2>
+
+                    </div>
+
+                    <div class="body table-responsive">
+
+                        <table class="table table-bordered table-hover">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Mã đơn</th>
+
+                                    <th>Ngày tạo</th>
+
+                                    <th>Tổng tiền</th>
+
+                                    <th>Trạng thái</th>
+
+                                    <th></th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <% orders.forEach(order => { %>
+
+                                    <tr>
+
+                                        <td>
+                                            <%= order.code %>
+                                        </td>
+
+                                        <td>
+
+                                            <%= new Date(order.createdAt)
+                                                .toLocaleString('vi-VN') %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <%= money(order.totalprice) %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <% if(order.status == 0){ %>
+                                                <span class="label bg-red">
+                                                    Đã hủy
+                                                </span>
+                                            <% } %>
+
+                                            <% if(order.status == 1){ %>
+                                                <span class="label bg-grey">
+                                                    Tiếp nhận
+                                                </span>
+                                            <% } %>
+
+                                            <% if(order.status == 2){ %>
+                                                <span class="label bg-blue">
+                                                    Chuẩn bị
+                                                </span>
+                                            <% } %>
+
+                                            <% if(order.status == 3){ %>
+                                                <span class="label bg-orange">
+                                                    Đang giao
+                                                </span>
+                                            <% } %>
+
+                                            <% if(order.status == 4){ %>
+                                                <span class="label bg-green">
+                                                    Hoàn thành
+                                                </span>
+                                            <% } %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <a
+                                                href="/order/detail/<%= order.code %>"
+                                                class="btn btn-info btn-sm">
+
+                                                Xem
+
+                                            </a>
+
+                                        </td>
+
+                                    </tr>
+
+                                <% }) %>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <!-- ================= ACTION ================= -->
+
+                <div style="display:flex; gap:10px;">
+
+                    <button
+                        onclick="toggleActive('<%= user._id %>')"
+                        class="btn
+                        <%= user.isActive == 'true'
+                            ? 'btn-danger'
+                            : 'btn-success' %>">
+
+                        <%= user.isActive == 'true'
+                            ? '🔒 Khóa tài khoản'
+                            : '🔓 Mở khóa tài khoản' %>
+
+                    </button>
+
+                    <a
+                        href="/admin-user"
+                        class="btn btn-default">
+
+                        ← Quay lại
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function toggleActive(id){
+
+    if(!confirm("Xác nhận thay đổi trạng thái user?")){
+        return;
+    }
+
+    fetch(`/admin-user/active/${id}`, {
+
+        method: "PUT"
+
+    })
+
+    .then(async res => {
+
+        const text = await res.text();
+
+        if(!res.ok){
+            throw new Error(text);
+        }
+
+        return text;
+
+    })
+
+    .then(() => {
+
+        alert("Cập nhật thành công!");
+
+        location.reload();
+
+    })
+
+    .catch(err => {
+
+        alert(err.message || "Có lỗi xảy ra!");
+
+    });
+
+}
+
+</script>

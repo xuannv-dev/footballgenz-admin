@@ -1,0 +1,374 @@
+<%
+const money = (n) => {
+    return Number(n).toLocaleString('vi-VN') + '₫';
+}
+%>
+
+<div class="row clearfix">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- HEADER -->
+            <div class="header">
+
+                <h2>
+                    📦 CHI TIẾT ĐƠN HÀNG - <%= order.code %>
+                </h2>
+
+            </div>
+
+            <div class="body">
+
+                <!-- ================= ORDER TRACKING ================= -->
+
+                <div style="margin-bottom:30px;">
+
+                    <h4>🚚 Trạng thái đơn hàng</h4>
+
+                    <%
+                    var steps = [
+                        { value: 1, text: "Đã tiếp nhận" },
+                        { value: 2, text: "Đang chuẩn bị" },
+                        { value: 3, text: "Đang giao" },
+                        { value: 4, text: "Hoàn thành" }
+                    ];
+                    %>
+
+                    <ul class="order-tracking">
+
+                        <% steps.forEach(function(step){ %>
+
+                            <li class="
+                                <%= order.status > step.value ? 'done' : '' %>
+                                <%= order.status == step.value ? 'active' : '' %>
+                            ">
+
+                                <span>
+                                    <%= step.text %>
+                                </span>
+
+                            </li>
+
+                        <% }) %>
+
+                    </ul>
+
+                </div>
+
+                <!-- ================= STATUS ================= -->
+
+                <div class="form-group">
+
+                    <label>
+                        Trạng thái đơn hàng
+                    </label>
+
+                    <%
+                    var allowedTransitions = {
+                        1: [2, 0],
+                        2: [3, 0],
+                        3: [4],
+                        4: [],
+                        0: []
+                    };
+
+                    var currentStatus = order.status;
+                    var allowed = allowedTransitions[currentStatus] || [];
+
+                    var statusList = [
+                        "Đã hủy",
+                        "Đã tiếp nhận",
+                        "Đang chuẩn bị",
+                        "Đang giao",
+                        "Hoàn thành"
+                    ];
+                    %>
+
+                    <select
+                        id="order-status"
+                        class="form-control"
+                        style="max-width:300px;">
+
+                        <% statusList.forEach(function(st, index){ %>
+
+                            <option
+                                value="<%= index %>"
+                                <%= order.status == index ? 'selected' : '' %>
+                                <%= (!allowed.includes(index) && index !== currentStatus) ? 'disabled' : '' %>>
+
+                                <%= st %>
+
+                            </option>
+
+                        <% }) %>
+
+                    </select>
+
+                </div>
+
+                <hr>
+
+                <!-- ================= CUSTOMER + SHIPPING ================= -->
+
+                <div class="row clearfix">
+
+                    <!-- CUSTOMER -->
+                    <div class="col-md-6">
+
+                        <div class="card">
+
+                            <div class="header">
+                                <h2>👤 KHÁCH HÀNG</h2>
+                            </div>
+
+                            <div class="body">
+
+                                <p>
+                                    <b>Họ tên:</b>
+                                </p>
+
+                                <p>
+                                    <%= order.receiver || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Số điện thoại:</b>
+                                </p>
+
+                                <p>
+                                    <%= order.phoneContact || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Email:</b>
+                                </p>
+
+                                <p>
+                                    <%= order.customer ? order.customer.email : '---' %>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SHIPPING -->
+                    <div class="col-md-6">
+
+                        <div class="card">
+
+                            <div class="header">
+                                <h2>🚚 GIAO HÀNG</h2>
+                            </div>
+
+                            <div class="body">
+
+                                <p>
+                                    <b>Địa chỉ:</b>
+                                </p>
+
+                                <p>
+                                    <%= order.addressShip || '---' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Thanh toán:</b>
+                                </p>
+
+                                <p>
+                                    <%= order.typePay == 0 ? 'COD' : 'Chuyển khoản' %>
+                                </p>
+
+                                <hr>
+
+                                <p>
+                                    <b>Ngày tạo:</b>
+                                </p>
+
+                                <p>
+                                    <%= new Date(order.createdAt).toLocaleString('vi-VN') %>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ================= PRODUCT TABLE ================= -->
+
+                <h4>🛒 Danh sách sản phẩm</h4>
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead>
+
+                            <tr>
+                                <th>Mã SP</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Màu</th>
+                                <th>SL</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <% order.products.forEach(p => { %>
+
+                                <tr>
+
+                                    <td>
+                                        <%= p.productCode %>
+                                    </td>
+
+                                    <td>
+                                        <%= p.name %>
+                                    </td>
+
+                                    <td>
+                                        <%= p.color || '---' %>
+                                    </td>
+
+                                    <td>
+                                        <%= p.quantity %>
+                                    </td>
+
+                                    <td>
+                                        <%= money(p.price) %>
+                                    </td>
+
+                                    <td>
+
+                                        <b>
+                                            <%= money(p.price * p.quantity) %>
+                                        </b>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <br>
+
+                <!-- ================= TOTAL ================= -->
+
+                <div class="alert alert-success">
+
+                    <h3 style="margin:0;">
+
+                        💰 Tổng thanh toán:
+
+                        <b>
+                            <%= money(order.totalprice) %>
+                        </b>
+
+                    </h3>
+
+                </div>
+
+                <br>
+
+                <!-- ================= ACTION ================= -->
+
+                <div style="display:flex; gap:10px;">
+
+                    <button
+                        class="btn btn-primary"
+                        id="btnUpdate">
+
+                        💾 Cập nhật trạng thái
+
+                    </button>
+
+                    <a
+                        href="/order"
+                        class="btn btn-default">
+
+                        ← Quay lại
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("btnUpdate")
+.addEventListener("click", function () {
+
+    const status =
+        document.getElementById("order-status").value;
+
+    fetch("/order/update/<%= order.code %>", {
+
+        method: "PUT",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            status: parseInt(status)
+        })
+
+    })
+
+    .then(async res => {
+
+        const text = await res.text();
+
+        if(!res.ok){
+            throw new Error(text);
+        }
+
+        return text;
+
+    })
+
+    .then(() => {
+
+        alert("Cập nhật thành công!");
+
+        location.reload();
+
+    })
+
+    .catch((err) => {
+
+        alert(err.message || "Có lỗi xảy ra!");
+
+    });
+
+});
+
+</script>

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Variant schema (size + color + stock)
 const VariantSchema = new mongoose.Schema({
     size: {
-        type: Number,
+        type: String,
         required: true
     },
     color: {
@@ -39,6 +39,10 @@ const ProductSchema = new mongoose.Schema({
     group: {
         type: String,
         default: "GIAY"
+    },
+    description: {
+        type: String,
+        default: ""
     },
     images: [{
         type: String

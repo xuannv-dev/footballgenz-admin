@@ -1,4 +1,3 @@
-
 <div class="row clearfix">
 
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -10,7 +9,7 @@
             <div class="header">
 
                 <h2>
-                    📦 DANH SÁCH SẢN PHẨM
+                    📰 DANH SÁCH TIN TỨC
                 </h2>
 
             </div>
@@ -32,107 +31,38 @@
 
                     type="text"
 
-                    placeholder="🔍 Tên hoặc mã..."
-
                     id="keyword"
 
                     value="<%= keyword || '' %>"
 
-                    class="form-input"
-
-                    style="width:220px;"
-                >
-
-                <!-- GROUP -->
-
-                <select
-                    id="group"
-                    class="form-select"
-                    style="width:180px;">
-
-                    <option value="">
-                        Danh mục
-                    </option>
-
-                    <option
-                        value="GIAY"
-                        <%= group=='GIAY'
-                            ? 'selected'
-                            : ''
-                        %>>
-
-                        Giày
-
-                    </option>
-
-                    <option
-                        value="AO"
-                        <%= group=='AO'
-                            ? 'selected'
-                            : ''
-                        %>>
-
-                        Áo
-
-                    </option>
-
-                </select>
-
-                <!-- MIN PRICE -->
-
-                <input
-
-                    type="number"
-
-                    placeholder="Giá từ"
-
-                    id="minPrice"
-
-                    value="<%= minPrice || '' %>"
+                    placeholder="🔍 Tìm tiêu đề..."
 
                     class="form-input"
 
-                    style="width:150px;"
-                >
-
-                <!-- MAX PRICE -->
-
-                <input
-
-                    type="number"
-
-                    placeholder="Đến"
-
-                    id="maxPrice"
-
-                    value="<%= maxPrice || '' %>"
-
-                    class="form-input"
-
-                    style="width:150px;"
+                    style="width:250px;"
                 >
 
                 <!-- SEARCH -->
 
                 <button
                     class="btn-main"
-                    onclick="searchProduct()">
+                    onclick="searchNews()">
 
                     Tìm
 
                 </button>
 
-                <!-- ADD PRODUCT -->
+                <!-- ADD -->
 
                 <a
-                    href="/product/add"
+                    href="/news/add"
                     class="btn btn-success">
 
                     <i class="material-icons">
                         add
                     </i>
 
-                    Thêm sản phẩm
+                    Thêm bài viết
 
                 </a>
 
@@ -152,15 +82,11 @@
 
                             <tr>
 
-                                <th>Ảnh</th>
+                                <th>Thumbnail</th>
 
-                                <th>Mã SP</th>
+                                <th>Tiêu đề</th>
 
-                                <th>Tên</th>
-
-                                <th>Giá</th>
-
-                                <th>Tồn kho</th>
+                                <th>Mô tả</th>
 
                                 <th>Trạng thái</th>
 
@@ -174,30 +100,28 @@
 
                         <tbody>
 
-                            <% products.forEach(function(p){ %>
+                            <% news.forEach(function(n){ %>
 
                                 <tr>
 
-                                    <!-- IMAGE -->
+                                    <!-- THUMBNAIL -->
 
                                     <td
                                         style="
+                                            width:100px;
                                             text-align:center;
                                             vertical-align:middle;
                                         ">
 
                                         <img
 
-                                            src="<%= p.images
-                                                &&
-                                                p.images.length
-                                                    ? p.images[0]
-                                                    : '/images/no-image.jpg'
+                                            src="<%= n.thumbnail
+                                                || '/images/no-image.jpg'
                                             %>"
 
-                                            width="70"
+                                            width="80"
 
-                                            height="70"
+                                            height="80"
 
                                             style="
                                                 object-fit:cover;
@@ -208,7 +132,7 @@
 
                                     </td>
 
-                                    <!-- PRODUCT CODE -->
+                                    <!-- TITLE -->
 
                                     <td
                                         style="
@@ -216,52 +140,18 @@
                                             font-weight:bold;
                                         ">
 
-                                        <%= p.productCode %>
+                                        <%= n.title %>
 
                                     </td>
 
-                                    <!-- NAME -->
+                                    <!-- DESCRIPTION -->
 
                                     <td
                                         style="
                                             vertical-align:middle;
                                         ">
 
-                                        <%= p.name %>
-
-                                    </td>
-
-                                    <!-- PRICE -->
-
-                                    <td
-                                        style="
-                                            vertical-align:middle;
-                                            color:red;
-                                            font-weight:bold;
-                                        ">
-
-                                        <%= formatCurrency(
-                                            p.price
-                                        ) %>
-
-                                    </td>
-
-                                    <!-- STOCK -->
-
-                                    <td
-                                        style="
-                                            text-align:center;
-                                            vertical-align:middle;
-                                        ">
-
-                                        <span
-                                            class="badge bg-blue">
-
-                                            <%= calculateStock(
-                                                p.variants
-                                            ) %>
-
-                                        </span>
+                                        <%= n.description %>
 
                                     </td>
 
@@ -273,12 +163,12 @@
                                             vertical-align:middle;
                                         ">
 
-                                        <% if(p.isActive){ %>
+                                        <% if(n.isActive){ %>
 
                                             <span
                                                 class="badge bg-green">
 
-                                                Đang bán
+                                                Hiển thị
 
                                             </span>
 
@@ -287,7 +177,7 @@
                                             <span
                                                 class="badge bg-grey">
 
-                                                Ngừng bán
+                                                Ẩn
 
                                             </span>
 
@@ -313,9 +203,9 @@
 
                                             <a
 
-                                                class="btn btn-info btn-sm"
+                                                href="/news/detail/<%= n.slug %>"
 
-                                                href="/product/detail/<%= p.productCode %>">
+                                                class="btn btn-info btn-sm">
 
                                                 Chi tiết
 
@@ -325,27 +215,27 @@
 
                                             <a
 
-                                                class="btn btn-primary btn-sm"
+                                                href="/news/edit/<%= n.slug %>"
 
-                                                href="/product/edit/<%= p.productCode %>">
+                                                class="btn btn-primary btn-sm">
 
                                                 Sửa
 
                                             </a>
 
-                                            <!-- ACTIVE / INACTIVE -->
+                                            <!-- DELETE -->
 
-                                            <% if(p.isActive){ %>
+                                            <% if(n.isActive){ %>
 
                                                 <a
 
+                                                    href="/news/delete/<%= n.slug %>"
+
                                                     class="btn btn-danger btn-sm"
 
-                                                    href="/product/delete/<%= p.productCode %>"
+                                                    onclick="return confirm('Xác nhận ẩn bài viết?')">
 
-                                                    onclick="return confirm('Xác nhận ngừng bán?')">
-
-                                                    Ngừng bán
+                                                    Ẩn
 
                                                 </a>
 
@@ -353,11 +243,11 @@
 
                                                 <a
 
-                                                    class="btn btn-success btn-sm"
+                                                    href="/news/active/<%= n.slug %>"
 
-                                                    href="/product/active/<%= p.productCode %>">
+                                                    class="btn btn-success btn-sm">
 
-                                                    Bật lại
+                                                    Hiển thị
 
                                                 </a>
 
@@ -402,7 +292,8 @@
 
                     class="page-link"
 
-                    href="/product?page=1&keyword=<%= keyword || '' %>&group=<%= group || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>">
+                    href="/news?page=1
+                    &keyword=<%= keyword || '' %>">
 
                     First
 
@@ -421,7 +312,8 @@
 
                         class="page-link"
 
-                        href="/product?page=<%= i %>&keyword=<%= keyword || '' %>&group=<%= group || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>">
+                        href="/news?page=<%= i %>
+                        &keyword=<%= keyword || '' %>">
 
                         <%= i %>
 
@@ -440,7 +332,8 @@
 
                     class="page-link"
 
-                    href="/product?page=<%= pages %>&keyword=<%= keyword || '' %>&group=<%= group || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>">
+                    href="/news?page=<%= pages %>
+                    &keyword=<%= keyword || '' %>">
 
                     Last
 
@@ -458,71 +351,22 @@
 
 <script>
 
-function searchProduct(){
+function searchNews(){
 
     const keyword =
         document.getElementById(
             'keyword'
         ).value;
 
-    const group =
-        document.getElementById(
-            'group'
-        ).value;
+    let url =
+        `/news?keyword=${
+            encodeURIComponent(
+                keyword
+            )
+        }`;
 
-    const minPrice =
-        document.getElementById(
-            'minPrice'
-        ).value;
-
-    const maxPrice =
-        document.getElementById(
-            'maxPrice'
-        ).value;
-
-    let url = `/product?`;
-
-    // ================= KEYWORD =================
-
-    if(keyword){
-
-        url +=
-            `keyword=${
-                encodeURIComponent(
-                    keyword
-                )
-            }&`;
-
-    }
-
-    // ================= GROUP =================
-
-    if(group){
-
-        url +=
-            `group=${group}&`;
-
-    }
-
-    // ================= MIN PRICE =================
-
-    if(minPrice){
-
-        url +=
-            `minPrice=${minPrice}&`;
-
-    }
-
-    // ================= MAX PRICE =================
-
-    if(maxPrice){
-
-        url +=
-            `maxPrice=${maxPrice}&`;
-
-    }
-
-    window.location.href = url;
+    window.location.href =
+        url;
 
 }
 

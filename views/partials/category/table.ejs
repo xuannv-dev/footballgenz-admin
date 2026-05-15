@@ -1,0 +1,269 @@
+<%
+const activeMap = {
+    true: {
+        text: "Hoạt động",
+        class: "label-success"
+    },
+    false: {
+        text: "Vô hiệu",
+        class: "label-danger"
+    }
+};
+%>
+
+<div class="card">
+
+    <div class="header">
+
+        <h2>
+            🗂 QUẢN LÝ DANH MỤC
+        </h2>
+
+    </div>
+
+    <div
+        style="
+            margin:15px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            align-items:center;
+        ">
+
+        <!-- SEARCH -->
+        <form
+            method="GET"
+            action="/category"
+            style="
+                display:flex;
+                gap:10px;
+            ">
+
+            <input
+                type="text"
+                name="keyword"
+                placeholder="🔍 Tìm danh mục..."
+                value="<%= keyword || '' %>"
+                class="form-control"
+                style="width:250px;"
+            >
+
+            <button class="btn btn-primary">
+
+                Tìm
+
+            </button>
+
+        </form>
+
+        <!-- ADD -->
+        <a
+            href="/category/add"
+            class="btn btn-success">
+
+            + Thêm danh mục
+
+        </a>
+
+    </div>
+
+    <div class="body table-responsive">
+
+        <table
+            class="table table-bordered table-hover">
+
+            <thead>
+
+                <tr>
+
+                    <th width="80">
+                        Ảnh
+                    </th>
+
+                    <th>
+                        Tên danh mục
+                    </th>
+
+                    <th>
+                        Loại
+                    </th>
+
+                    <th width="120">
+                        Trạng thái
+                    </th>
+
+                    <th width="180">
+                        Hành động
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <% categories.forEach(category => { %>
+
+                    <tr>
+
+                        <!-- IMAGE -->
+                        <td>
+
+                            <img 
+                                src="<%= category.image || '/images/no-image.jpg' %>" 
+                                class="table-thumbnail"
+                            />
+
+                        </td>
+
+                        <!-- NAME -->
+                        <td>
+
+                            <strong>
+                                <%= category.group %>
+                            </strong>
+
+                        </td>
+
+                        <!-- TYPE -->
+                        <td>
+                            <%= Array.isArray(category.type)
+                                ? category.type.join(', ')
+                                : category.type %>
+                        </td>
+
+                        <!-- STATUS -->
+                        <td>
+
+                            <% const st =
+                                activeMap[category.isactive]
+                                || activeMap['false'];
+                            %>
+
+                            <span class="label <%= st.class %>">
+
+                                <%= st.text %>
+
+                            </span>
+
+                        </td>
+
+                        <!-- ACTION -->
+                        <td>
+
+                            <a
+                                href="/category/detail/<%= category._id %>"
+                                class="btn btn-info btn-sm">
+
+                                Sửa
+
+                            </a>
+
+                            <button
+                                onclick="deleteCategory('<%= category._id %>')"
+                                class="btn btn-danger btn-sm">
+
+                                Xóa
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                <% }) %>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ================= PAGINATION ================= -->
+
+<div class="row clearfix">
+
+    <% if(pages > 0) { %>
+
+        <ul class="pagination mx-auto">
+
+            <!-- FIRST -->
+
+            <li
+                class="page-item <%= current == 1 ? 'disabled' : '' %>">
+
+                <a
+                    class="page-link"
+                    href="/category?page=1&keyword=<%= keyword || '' %>">
+
+                    First
+
+                </a>
+
+            </li>
+
+            <!-- PAGE NUMBER -->
+
+            <% for(let i = 1; i <= pages; i++){ %>
+
+                <li
+                    class="page-item <%= current == i ? 'active' : '' %>">
+
+                    <a
+                        class="page-link"
+                        href="/category?page=<%= i %>&keyword=<%= keyword || '' %>">
+
+                        <%= i %>
+
+                    </a>
+
+                </li>
+
+            <% } %>
+
+            <!-- LAST -->
+
+            <li
+                class="page-item <%= current == pages ? 'disabled' : '' %>">
+
+                <a
+                    class="page-link"
+                    href="/category?page=<%= pages %>&keyword=<%= keyword || '' %>">
+
+                    Last
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    <% } %>
+
+</div>
+
+<script>
+
+function deleteCategory(id){
+
+    if(!confirm("Xác nhận xóa danh mục?")) return;
+
+    fetch(`/category/delete/${id}`, {
+
+        method: "DELETE"
+
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        alert(data);
+
+        location.reload();
+
+    });
+
+}
+
+</script>

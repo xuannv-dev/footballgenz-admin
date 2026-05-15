@@ -1,0 +1,171 @@
+<div class="card">
+
+    <div class="header">
+        <h2>📁 CHI TIẾT DANH MỤC</h2>
+    </div>
+
+    <div class="body">
+
+        <!-- NAME -->
+        <div class="form-group">
+            <label>Tên danh mục</label>
+
+            <div class="form-line">
+                <input 
+                    type="text"
+                    id="group"
+                    class="form-control"
+                    value="<%= category.group %>"
+                >
+            </div>
+        </div>
+
+        <!-- TYPE -->
+        <div class="form-group">
+            <label>Loại</label>
+
+            <div class="form-line">
+                <input 
+                    type="text"
+                    id="type"
+                    class="form-control"
+                    value="<%= category.type %>"
+                >
+            </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="form-group">
+            <label>Trạng thái</label>
+
+            <select id="isactive" class="form-control order-status-select">
+
+                <option value="true"
+                    <%= category.isactive == true ? 'selected' : '' %>>
+                    Hoạt động
+                </option>
+
+                <option value="false"
+                    <%= category.isactive == false ? 'selected' : '' %>>
+                    Tạm khóa
+                </option>
+
+            </select>
+        </div>
+
+        <!-- IMAGE -->
+        <div class="form-group">
+
+            <label>Ảnh danh mục</label>
+
+            <div style="margin-bottom:15px;">
+
+                <img 
+                    id="previewImage"
+                    src="<%= category.image || '/images/no-image.jpg' %>"
+                    class="table-thumbnail"
+                    style="width:120px;height:120px;"
+                >
+
+            </div>
+
+            <input type="hidden" id="image" value="<%= category.image %>">
+
+            <input type="file" id="fileUpload">
+
+            <button 
+                type="button"
+                class="btn btn-info"
+                id="btnUpload"
+                style="margin-top:10px;"
+            >
+                Upload ảnh
+            </button>
+
+        </div>
+
+        <!-- BUTTON -->
+        <button 
+            class="btn btn-primary"
+            onclick="updateCategory()"
+        >
+            Cập nhật danh mục
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+$("#btnUpload").click(function(){
+
+    let formData = new FormData();
+
+    let file = $('#fileUpload')[0].files[0];
+
+    if(!file){
+        alert("Vui lòng chọn ảnh");
+        return;
+    }
+
+    formData.append("file", file);
+
+    $.ajax({
+        url: "/upload",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function(response){
+
+            $('#image').val(response);
+
+            $('#previewImage').attr('src', response);
+
+            alert("Upload thành công!");
+        },
+
+        error: function(){
+            alert("Upload thất bại!");
+        }
+    });
+
+});
+
+function updateCategory(){
+
+    $.ajax({
+
+        url: "/category/update/<%= category._id %>",
+        type: "PUT",
+
+        contentType: "application/json",
+
+        data: JSON.stringify({
+
+            group: $('#group').val(),
+
+            type: $('#type').val(),
+
+            image: $('#image').val(),
+
+            isactive: $('#isactive').val()
+
+        }),
+
+        success: function(){
+            alert("Cập nhật thành công!");
+            location.reload();
+        },
+
+        error: function(){
+            alert("Cập nhật thất bại!");
+        }
+
+    });
+
+}
+
+</script>

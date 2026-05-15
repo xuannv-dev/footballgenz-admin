@@ -1,0 +1,193 @@
+<div class="row clearfix">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- ================= HEADER ================= -->
+
+            <div class="header">
+
+                <h2>
+                    📰 CHI TIẾT BÀI VIẾT
+                </h2>
+
+            </div>
+
+            <!-- ================= BODY ================= -->
+
+            <div class="body">
+
+                <!-- TITLE -->
+
+                <h2
+                    style="
+                        margin-bottom:20px;
+                        font-weight:bold;
+                    ">
+
+                    <%= news.title %>
+
+                </h2>
+
+                <!-- STATUS -->
+
+                <div
+                    style="
+                        margin-bottom:15px;
+                    ">
+
+                    <% if(news.isActive){ %>
+
+                        <span
+                            class="badge bg-green">
+
+                            Hiển thị
+
+                        </span>
+
+                    <% } else { %>
+
+                        <span
+                            class="badge bg-grey">
+
+                            Ẩn
+
+                        </span>
+
+                    <% } %>
+
+                </div>
+
+                <!-- CREATED DATE -->
+
+                <div
+                    style="
+                        margin-bottom:20px;
+                        color:#777;
+                    ">
+
+                    Ngày tạo:
+                    <%= new Date(news.createdAt)
+                        .toLocaleString('vi-VN')
+                    %>
+
+                </div>
+
+                <!-- THUMBNAIL -->
+
+                <div
+                    style="
+                        margin-bottom:25px;
+                    ">
+
+                    <img
+
+                        src="<%= news.thumbnail || '/images/no-image.jpg' %>"
+
+                        style="
+                            width:100%;
+                            max-height:500px;
+                            object-fit:contain;
+                            background:#f5f5f5;
+                            border-radius:10px;
+                            border:1px solid #ddd;
+                        "
+                    >
+
+                </div>
+
+                <!-- DESCRIPTION -->
+
+                <div
+                    style="
+                        margin-bottom:25px;
+                        font-size:16px;
+                        color:#555;
+                    ">
+
+                    <%= news.description %>
+
+                </div>
+
+                <hr>
+
+                <!-- CONTENT -->
+
+                <div
+                    class="news-content">
+
+                    <%- news.content %>
+
+                </div>
+
+                <hr>
+
+                <!-- BUTTON -->
+
+                <div
+                    style="
+                        margin-top:30px;
+                    ">
+
+                    <a
+
+                        href="/news/edit/<%= news.slug %>"
+
+                        class="btn btn-primary">
+
+                        Cập nhật
+
+                    </a>
+
+                    <a
+
+                        href="/news"
+
+                        class="btn btn-default">
+
+                        Quay lại
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= STYLE ================= -->
+
+<style>
+
+.news-content img{
+
+    max-width:100%;
+
+    border-radius:8px;
+
+    margin:10px 0;
+
+}
+
+.news-content p{
+
+    line-height:1.8;
+
+    font-size:15px;
+
+}
+
+.news-content iframe{
+
+    width:100%;
+
+    min-height:400px;
+
+}
+
+</style>

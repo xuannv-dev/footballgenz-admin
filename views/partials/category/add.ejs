@@ -1,0 +1,268 @@
+<div class="card">
+
+    <div class="header">
+
+        <h2>
+            ➕ THÊM DANH MỤC
+        </h2>
+
+    </div>
+
+    <div class="body">
+
+        <!-- NAME -->
+        <div class="form-group">
+
+            <label>
+                Tên danh mục
+            </label>
+
+            <input
+                type="text"
+                id="group"
+                class="form-control"
+                placeholder="Ví dụ: Giày đá bóng"
+            >
+
+        </div>
+
+        <!-- TYPE -->
+        <div class="form-group">
+
+            <label>
+                Loại danh mục
+            </label>
+
+            <input
+                type="text"
+                id="type"
+                class="form-control"
+                placeholder="Ví dụ: Nike | Adidas | Puma"
+            >
+
+            <small style="color:gray;">
+                Các loại cách nhau bằng dấu |
+            </small>
+
+        </div>
+
+        <!-- STATUS -->
+        <div class="form-group">
+
+            <label>
+                Trạng thái
+            </label>
+
+            <select
+                id="isactive"
+                class="form-control order-status-select">
+
+                <option value="true">
+                    Hoạt động
+                </option>
+
+                <option value="false">
+                    Vô hiệu
+                </option>
+
+            </select>
+
+        </div>
+
+        <!-- IMAGE -->
+        <div class="form-group">
+
+            <label>
+                Ảnh đại diện
+            </label>
+
+            <input
+                type="file"
+                id="file"
+                class="form-control"
+            >
+
+            <button
+                id="btnUpload"
+                class="btn btn-info"
+                style="margin-top:10px;">
+
+                Upload ảnh
+
+            </button>
+
+        </div>
+
+        <!-- PREVIEW -->
+        <div
+            id="preview"
+            style="margin-top:15px;">
+
+        </div>
+
+        <!-- ACTION -->
+        <div
+            style="
+                margin-top:20px;
+                display:flex;
+                gap:10px;
+            ">
+
+            <button
+                id="btnAdd"
+                class="btn btn-success">
+
+                Thêm danh mục
+
+            </button>
+
+            <a
+                href="/category"
+                class="btn btn-default">
+
+                Quay lại
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let imageUrl = '';
+
+/* ================= UPLOAD IMAGE ================= */
+$('#btnUpload').click(function(e){
+
+    e.preventDefault();
+
+    let file =
+        $('#file').prop('files')[0];
+
+    if(!file){
+
+        alert("Vui lòng chọn ảnh");
+
+        return;
+
+    }
+
+    let formData = new FormData();
+
+    formData.append('file', file);
+
+    $.ajax({
+
+        url: '/upload',
+
+        type: 'POST',
+
+        data: formData,
+
+        contentType: false,
+
+        processData: false,
+
+        success: function(response){
+
+            imageUrl = response;
+
+            $('#preview').html(`
+
+                <img
+                    src="${response}"
+                    style="
+                        width:120px;
+                        height:120px;
+                        object-fit:cover;
+                        border-radius:10px;
+                        border:1px solid #ddd;
+                    "
+                >
+
+            `);
+
+            alert("Upload thành công!");
+
+        },
+
+        error: function(){
+
+            alert("Upload thất bại!");
+
+        }
+
+    });
+
+});
+
+
+/* ================= ADD CATEGORY ================= */
+$('#btnAdd').click(function(){
+
+    let group =
+        $('#group').val().trim();
+
+    let type =
+        $('#type')
+        .val()
+        .split('|')
+        .map(item => item.trim());
+
+    let isactive =
+        $('#isactive').val() === 'true';
+
+    if(!group){
+
+        alert("Nhập tên danh mục");
+
+        return;
+
+    }
+
+    let data = {
+
+        group,
+
+        type,
+
+        image: imageUrl,
+
+        isactive
+
+    };
+
+    $.ajax({
+
+        url: '/category/add',
+
+        type: 'POST',
+
+        data: JSON.stringify(data),
+
+        contentType:
+            'application/json',
+
+        success: function(){
+
+            alert("Thêm thành công!");
+
+            window.location.href =
+                '/category';
+
+        },
+
+        error: function(){
+
+            alert("Thêm thất bại!");
+
+        }
+
+    });
+
+});
+
+</script>

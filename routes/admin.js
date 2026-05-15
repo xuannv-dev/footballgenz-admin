@@ -1,9 +1,77 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+const Product = require('../models/product');
+const User = require('../models/user');
+const Order = require('../models/order');
+const News =
+    require('../models/news');
+
+const formatCurrency =
+    require('../utils/formatCurrency');
+
+/* ================= DASHBOARD ================= */
+
+router.get('/', async function(req, res) {
+
+    try {
+
+        // ================= COUNT =================
+
+        const totalProducts =
+            await Product.countDocuments();
+
+        const totalUsers =
+            await User.countDocuments();
+
+        const totalOrders =
+            await Order.countDocuments();
+
+        const totalNews =
+            await News.countDocuments();
+
+        // ================= REVENUE =================
+
+        const completedOrders =
+            await Order.find({
+                status: 4
+            });
+
+        let totalRevenue = 0;
+
+        completedOrders.forEach(order => {
+
+            totalRevenue += order.totalPrice || 0;
+
+        });
+
+        // ================= RENDER =================
+
+        res.render('dashboard', {
+
+            totalProducts,
+
+            totalUsers,
+
+            totalOrders,
+
+            totalRevenue,
+
+            totalRevenueFormatted:
+                formatCurrency(totalRevenue),
+            totalNews
+
+        });
+
+    }
+    catch(err){
+
+        console.log(err);
+
+        res.send('Dashboard error');
+
+    }
+
 });
 
 module.exports = router;

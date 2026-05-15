@@ -1,0 +1,25 @@
+/* ================= CARD ================= */
+
+.card {
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+}
+
+/* ================= TABLE ================= */
+
+.table th {
+
+    font-weight: 600;
+
+}
+
+/* ================= BUTTON ================= */
+
+.btn {
+
+    border-radius: 6px !important;
+
+}

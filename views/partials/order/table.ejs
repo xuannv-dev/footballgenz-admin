@@ -1,0 +1,478 @@
+<%
+const numberWithCommas = (number)=>{
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+}
+
+const statusMap = {
+
+    0: {
+        text: "Đã hủy",
+        class: "label bg-red"
+    },
+
+    1: {
+        text: "Chờ xác nhận",
+        class: "label bg-grey"
+    },
+
+    2: {
+        text: "Đang chuẩn bị",
+        class: "label bg-blue"
+    },
+
+    3: {
+        text: "Đang giao",
+        class: "label bg-orange"
+    },
+
+    4: {
+        text: "Hoàn thành",
+        class: "label bg-green"
+    }
+
+};
+%>
+
+<div class="card">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <h2>
+            📦 QUẢN LÝ ĐƠN HÀNG
+        </h2>
+
+    </div>
+
+    <!-- ================= FILTER ================= -->
+
+    <div
+        style="
+            margin:15px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            align-items:center;
+        ">
+
+        <!-- SEARCH -->
+
+        <form
+            method="GET"
+            action="/order"
+            style="
+                display:flex;
+                gap:5px;
+            ">
+
+            <input
+                type="text"
+                name="code"
+                placeholder="🔍 Tìm mã đơn..."
+                value="<%= searchCode || '' %>"
+                class="form-control"
+                style="width:220px;"
+            />
+
+            <% if(selectedStatus){ %>
+
+                <input
+                    type="hidden"
+                    name="status"
+                    value="<%= selectedStatus %>">
+
+            <% } %>
+
+            <button class="btn btn-primary">
+
+                Tìm
+
+            </button>
+
+        </form>
+
+        <!-- FILTER STATUS -->
+
+        <a
+            href="/order"
+            class="btn <%= !selectedStatus ? 'btn-primary' : 'btn-default' %>">
+
+            Tất cả
+
+        </a>
+
+        <a
+            href="/order?status=1"
+            class="btn <%= selectedStatus == 1 ? 'btn-primary' : 'btn-default' %>">
+
+            Chờ xác nhận
+
+        </a>
+
+        <a
+            href="/order?status=2"
+            class="btn <%= selectedStatus == 2 ? 'btn-primary' : 'btn-default' %>">
+
+            Chuẩn bị
+
+        </a>
+
+        <a
+            href="/order?status=3"
+            class="btn <%= selectedStatus == 3 ? 'btn-primary' : 'btn-default' %>">
+
+            Đang giao
+
+        </a>
+
+        <a
+            href="/order?status=4"
+            class="btn <%= selectedStatus == 4 ? 'btn-primary' : 'btn-default' %>">
+
+            Hoàn thành
+
+        </a>
+
+        <a
+            href="/order?status=0"
+            class="btn <%= selectedStatus == 0 ? 'btn-primary' : 'btn-default' %>">
+
+            Đã hủy
+
+        </a>
+
+    </div>
+
+    <!-- ================= TABLE ================= -->
+
+    <div class="body table-responsive">
+
+        <table
+            class="table table-bordered table-hover dataTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>Mã đơn</th>
+
+                    <th>Khách hàng</th>
+
+                    <th>Ngày tạo</th>
+
+                    <th>Tổng tiền</th>
+
+                    <th>Trạng thái</th>
+
+                    <th width="260">
+                        Hành động
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <% orders.forEach(order => { %>
+
+                    <tr>
+
+                        <!-- CODE -->
+
+                        <td>
+
+                            <b>
+                                <%= order.code %>
+                            </b>
+
+                        </td>
+
+                        <!-- CUSTOMER -->
+
+                        <td>
+
+                            <%= order.customer
+                                ? (
+                                    order.customer.firstname
+                                    + ' '
+                                    + order.customer.lastname
+                                )
+                                : 'N/A'
+                            %>
+
+                        </td>
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            <%= new Date(order.createdAt)
+                                .toLocaleString('vi-VN')
+                            %>
+
+                        </td>
+
+                        <!-- PRICE -->
+
+                        <td
+                            style="
+                                color:red;
+                                font-weight:bold;
+                            ">
+
+                            <%= numberWithCommas(
+                                order.totalprice
+                            ) %>₫
+
+                        </td>
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            <% const st =
+                                statusMap[order.status]
+                                || {
+                                    text:"Không xác định",
+                                    class:"label bg-grey"
+                                };
+                            %>
+
+                            <span
+                                class="<%= st.class %>">
+
+                                <%= st.text %>
+
+                            </span>
+
+                        </td>
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <!-- DETAIL -->
+
+                            <a
+                                href="/order/detail/<%= order.code %>"
+                                class="btn btn-info">
+
+                                Xem
+
+                            </a>
+
+                            <!-- STATUS UPDATE -->
+
+                            <select
+
+                                data-current="<%= order.status %>"
+
+                                onchange="
+                                    updateStatus(
+                                        this,
+                                        '<%= order.code %>'
+                                    )
+                                "
+
+                                class="form-control input-sm"
+
+                                style="
+                                    width:160px;
+                                    display:inline-block;
+                                    margin-left:5px;
+                                ">
+
+                                <% Object.keys(statusMap)
+                                    .forEach(key => { %>
+
+                                    <option
+
+                                        value="<%= key %>"
+
+                                        <%= order.status == key
+                                            ? 'selected'
+                                            : ''
+                                        %>>
+
+                                        <%= statusMap[key].text %>
+
+                                    </option>
+
+                                <% }) %>
+
+                            </select>
+
+                        </td>
+
+                    </tr>
+
+                <% }) %>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<!-- ================= PAGINATION ================= -->
+
+<div class="row clearfix">
+
+    <% if(pages > 0) { %>
+
+        <ul class="pagination mx-auto">
+
+            <!-- FIRST -->
+
+            <li
+                class="page-item <%= current == 1 ? 'disabled' : '' %>">
+
+                <a
+                    class="page-link"
+                    href="/order?page=1&status=<%= selectedStatus || '' %>&code=<%= searchCode || '' %>">
+
+                    First
+
+                </a>
+
+            </li>
+
+            <!-- PAGE NUMBER -->
+
+            <% for(let i = 1; i <= pages; i++){ %>
+
+                <li
+                    class="page-item <%= current == i ? 'active' : '' %>">
+
+                    <a
+                        class="page-link"
+                        href="/order?page=<%= i %>&status=<%= selectedStatus || '' %>&code=<%= searchCode || '' %>">
+
+                        <%= i %>
+
+                    </a>
+
+                </li>
+
+            <% } %>
+
+            <!-- LAST -->
+
+            <li
+                class="page-item <%= current == pages ? 'disabled' : '' %>">
+
+                <a
+                    class="page-link"
+                    href="/order?page=<%= pages %>&status=<%= selectedStatus || '' %>&code=<%= searchCode || '' %>">
+
+                    Last
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    <% } %>
+
+</div>
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+function updateStatus(selectElement, code){
+
+    const newStatus =
+        selectElement.value;
+
+    const oldStatus =
+        selectElement.getAttribute(
+            "data-current"
+        );
+
+    // ================= CONFIRM =================
+
+    if(
+        !confirm(
+            "Xác nhận cập nhật trạng thái?"
+        )
+    ){
+
+        // rollback UI
+
+        selectElement.value =
+            oldStatus;
+
+        return;
+
+    }
+
+    // ================= UPDATE =================
+
+    fetch(`/order/update/${code}`, {
+
+        method: "PUT",
+
+        headers: {
+
+            "Content-Type":
+                "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+            status: parseInt(newStatus)
+
+        })
+
+    })
+
+    .then(res => {
+
+        if(!res.ok){
+
+            throw new Error();
+
+        }
+
+        return res.text();
+
+    })
+
+    .then(() => {
+
+        alert(
+            "Cập nhật trạng thái thành công!"
+        );
+
+        // update current status
+
+        selectElement.setAttribute(
+            "data-current",
+            newStatus
+        );
+
+        location.reload();
+
+    })
+
+    .catch(() => {
+
+        alert(
+            "Không thể cập nhật trạng thái!"
+        );
+
+        // rollback UI
+
+        selectElement.value =
+            oldStatus;
+
+    });
+
+}
+
+</script>

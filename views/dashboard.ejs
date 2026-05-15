@@ -1,0 +1,247 @@
+<div class="row clearfix">
+
+    <!-- TOTAL PRODUCT -->
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+        <div class="info-box bg-blue hover-expand-effect">
+
+            <div class="icon">
+                <i class="material-icons">
+                    inventory
+                </i>
+            </div>
+
+            <div class="content">
+
+                <div class="text">
+                    TỔNG SẢN PHẨM
+                </div>
+
+                <div class="number">
+                    <%= totalProducts %>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TOTAL USER -->
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+        <div class="info-box bg-green hover-expand-effect">
+
+            <div class="icon">
+                <i class="material-icons">
+                    people
+                </i>
+            </div>
+
+            <div class="content">
+
+                <div class="text">
+                    NGƯỜI DÙNG
+                </div>
+
+                <div class="number">
+                    <%= totalUsers %>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TOTAL ORDER -->
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+        <div class="info-box bg-orange hover-expand-effect">
+
+            <div class="icon">
+                <i class="material-icons">
+                    receipt_long
+                </i>
+            </div>
+
+            <div class="content">
+
+                <div class="text">
+                    ĐƠN HÀNG
+                </div>
+
+                <div class="number">
+                    <%= totalOrders %>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- TOTAL NEWS -->
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+        <div class="info-box bg-purple hover-expand-effect">
+
+            <div class="icon">
+                <i class="material-icons">
+                    article
+                </i>
+            </div>
+
+            <div class="content">
+
+                <div class="text">
+                    BÀI VIẾT
+                </div>
+
+                <div class="number">
+                    <%= totalNews %>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- REVENUE -->
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+        <div class="info-box bg-red hover-expand-effect">
+
+            <div class="icon">
+                <i class="material-icons">
+                    payments
+                </i>
+            </div>
+
+            <div class="content">
+
+                <div class="text">
+                    DOANH THU
+                </div>
+
+                <div class="number"
+                    style="
+                        font-size:16px;
+                        line-height:24px;
+                    ">
+
+                    <%= totalRevenueFormatted %>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= CHART ================= -->
+
+<div class="row clearfix">
+
+    <div class="col-lg-12">
+
+        <div class="card">
+
+            <div class="header">
+
+                <h2>
+                    📊 TỔNG QUAN HỆ THỐNG
+                </h2>
+
+            </div>
+
+            <div class="body">
+
+                <canvas
+                    id="dashboardChart"
+                    height="100">
+                </canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+window.addEventListener('load', function(){
+
+    const ctx =
+        document.getElementById(
+            'dashboardChart'
+        );
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: [
+
+                'Sản phẩm',
+
+                'Người dùng',
+
+                'Đơn hàng',
+
+                'Tin tức'
+
+            ],
+
+            datasets: [{
+
+                label: 'Thống kê hệ thống',
+
+                data: [
+
+                    <%= totalProducts %>,
+
+                    <%= totalUsers %>,
+
+                    <%= totalOrders %>
+
+                    <%= totalNews %>
+                ]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    display: true
+
+                }
+
+            }
+
+        }
+
+    });
+
+});
+
+</script>

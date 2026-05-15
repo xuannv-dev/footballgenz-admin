@@ -1,0 +1,282 @@
+<%
+const formatDate = (date) => {
+    return new Date(date).toLocaleString('vi-VN');
+}
+%>
+
+<div class="card">
+
+    <div class="header">
+
+        <h2>
+            👥 QUẢN LÝ NGƯỜI DÙNG
+        </h2>
+
+    </div>
+
+    <!-- ================= FILTER ================= -->
+
+    <div style="
+        padding:15px;
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        align-items:center;
+    ">
+
+        <!-- SEARCH -->
+        <form
+            method="GET"
+            action="/admin-user"
+            style="display:flex; gap:10px;">
+
+            <input
+                type="text"
+                name="keyword"
+                placeholder="🔍 Tìm email..."
+                value="<%= keyword || '' %>"
+                class="form-control"
+                style="width:250px;">
+
+            <% if(role){ %>
+                <input
+                    type="hidden"
+                    name="role"
+                    value="<%= role %>">
+            <% } %>
+
+            <button class="btn btn-primary">
+                Tìm
+            </button>
+
+        </form>
+
+        <!-- FILTER ROLE -->
+        <a
+            href="/admin-user"
+            class="btn <%= !role ? 'btn-primary' : 'btn-default' %>">
+
+            Tất cả
+
+        </a>
+
+        <a
+            href="/admin-user?role=USER"
+            class="btn <%= role == 'USER' ? 'btn-primary' : 'btn-default' %>">
+
+            USER
+
+        </a>
+
+        <a
+            href="/admin-user?role=ADMIN"
+            class="btn <%= role == 'ADMIN' ? 'btn-primary' : 'btn-default' %>">
+
+            ADMIN
+
+        </a>
+
+    </div>
+
+    <!-- ================= TABLE ================= -->
+
+    <div class="body table-responsive">
+
+        <table class="table table-bordered table-hover">
+
+            <thead>
+
+                <tr>
+
+                    <th>Họ tên</th>
+
+                    <th>Email</th>
+
+                    <th>Role</th>
+
+                    <th>Trạng thái</th>
+
+                    <th>Ngày tạo</th>
+
+                    <th>Hành động</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <% users.forEach(user => { %>
+
+                    <tr>
+
+                        <td>
+
+                            <%= user.firstname || '' %>
+                            <%= user.lastname || '' %>
+
+                        </td>
+
+                        <td>
+
+                            <%= user.email %>
+
+                        </td>
+
+                        <td>
+
+                            <% if(user.role == 'ADMIN'){ %>
+
+                                <span class="badge badge-danger">
+                                    ADMIN
+                                </span>
+
+                            <% } else { %>
+
+                                <span class="badge badge-primary">
+                                    USER
+                                </span>
+
+                            <% } %>
+
+                        </td>
+
+                        <td>
+
+                            <% if(user.isActive == "true"){ %>
+
+                                <span class="badge badge-success">
+                                    Hoạt động
+                                </span>
+
+                            <% } else { %>
+
+                                <span class="badge badge-warning">
+                                    Đã khóa
+                                </span>
+
+                            <% } %>
+
+                        </td>
+
+                        <td>
+
+                            <%= formatDate(user.createdAt) %>
+
+                        </td>
+
+                        <td style="white-space:nowrap;">
+
+                        <a
+                            href="/admin-user/detail/<%= user._id %>"
+                            class="btn btn-info btn-sm">
+
+                            Xem
+
+                        </a>
+
+                        <button
+                            onclick="toggleActive('<%= user._id %>')"
+                            class="btn btn-sm
+                            <%= user.isActive == 'true'
+                                ? 'btn-danger'
+                                : 'btn-success' %>">
+
+                            <%= user.isActive == 'true'
+                                ? 'Khóa'
+                                : 'Mở khóa' %>
+
+                        </button>
+
+                    </td>
+
+                    </tr>
+
+                <% }) %>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ================= PAGINATION ================= -->
+
+<div class="row clearfix">
+
+    <% if(pages > 1){ %>
+
+        <ul class="pagination">
+
+            <% for(let i = 1; i <= pages; i++){ %>
+
+                <li class="
+                    page-item
+                    <%= current == i ? 'active' : '' %>
+                ">
+
+                    <a
+                        class="page-link"
+                        href="/admin-user?page=<%= i %>
+                        <% if(keyword){ %>&keyword=<%= keyword %><% } %>
+                        <% if(role){ %>&role=<%= role %><% } %>">
+
+                        <%= i %>
+
+                    </a>
+
+                </li>
+
+            <% } %>
+
+        </ul>
+
+    <% } %>
+
+</div>
+
+<script>
+
+function toggleActive(id){
+
+    if(!confirm("Xác nhận thay đổi trạng thái user?")){
+        return;
+    }
+
+    fetch(`/admin-user/active/${id}`, {
+
+        method: "PUT"
+
+    })
+
+    .then(async res => {
+
+        const text = await res.text();
+
+        if(!res.ok){
+            throw new Error(text);
+        }
+
+        return text;
+
+    })
+
+    .then(() => {
+
+        alert("Cập nhật thành công!");
+
+        location.reload();
+
+    })
+
+    .catch(err => {
+
+        alert(err.message || "Có lỗi xảy ra!");
+
+    });
+
+}
+
+</script>

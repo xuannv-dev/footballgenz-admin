@@ -1,0 +1,559 @@
+<div class="row clearfix">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- ================= HEADER ================= -->
+
+            <div class="header">
+
+                <h2>
+                    🔄 QUẢN LÝ ĐỔI TRẢ / HẬU MÃI
+                </h2>
+
+            </div>
+
+            <!-- ================= FILTER ================= -->
+
+            <div
+                style="
+                    margin:15px;
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    align-items:center;
+                ">
+
+                <!-- SEARCH -->
+
+                <input
+
+                    type="text"
+
+                    id="keyword"
+
+                    value="<%= keyword || '' %>"
+
+                    placeholder="🔍 Mã đơn hàng..."
+
+                    class="form-control"
+
+                    style="width:220px;"
+                >
+
+                <!-- STATUS -->
+
+                <select
+                    id="status"
+                    class="form-control"
+                    style="width:220px;">
+
+                    <option value="">
+                        -- Trạng thái --
+                    </option>
+
+                    <option
+                        value="1"
+                        <%= selectedStatus == 1 ? 'selected' : '' %>>
+
+                        Chờ xử lý
+
+                    </option>
+
+                    <option
+                        value="2"
+                        <%= selectedStatus == 2 ? 'selected' : '' %>>
+
+                        Đã duyệt
+
+                    </option>
+
+                    <option
+                        value="3"
+                        <%= selectedStatus == 3 ? 'selected' : '' %>>
+
+                        Từ chối
+
+                    </option>
+
+                    <option
+                        value="4"
+                        <%= selectedStatus == 4 ? 'selected' : '' %>>
+
+                        Hoàn thành
+
+                    </option>
+
+                </select>
+
+                <!-- BUTTON -->
+
+                <button
+                    class="btn btn-primary"
+                    onclick="searchReturn()">
+
+                    Tìm kiếm
+
+                </button>
+
+                <a
+                    href="/return/add"
+                    class="btn btn-success">
+
+                    Tạo yêu cầu
+
+                </a>
+
+            </div>
+
+            <!-- ================= TABLE ================= -->
+
+            <div class="body">
+
+                <div class="table-responsive">
+
+                    <table
+                        class="table table-bordered table-hover dataTable">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Mã đơn
+                                </th>
+
+                                <th>
+                                    Khách hàng
+                                </th>
+
+                                <th>
+                                    Loại yêu cầu
+                                </th>
+
+                                <th>
+                                    Lý do
+                                </th>
+
+                                <th>
+                                    Ghi chú admin
+                                </th>
+
+                                <th>
+                                    Trạng thái
+                                </th>
+
+                                <th>
+                                    Ngày tạo
+                                </th>
+
+                                <th>
+                                    Hành động
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <% requests.forEach(function(r){ %>
+
+                                <tr>
+
+                                    <!-- ORDER -->
+
+                                    <td>
+
+                                        <strong>
+                                            <%= r.orderCode %>
+                                        </strong>
+
+                                    </td>
+
+                                    <!-- CUSTOMER -->
+
+                                    <td>
+
+                                        <%= r.customerName %>
+
+                                    </td>
+
+                                    <!-- RETURN TYPE -->
+
+                                    <td>
+
+                                        <% if(
+                                            r.returnType ==
+                                            RETURN_TYPE.SIZE
+                                        ){ %>
+
+                                            <span
+                                                class="badge bg-blue">
+
+                                                Đổi size
+
+                                            </span>
+
+                                        <% } %>
+
+                                        <% if(
+                                            r.returnType ==
+                                            RETURN_TYPE.DEFECT
+                                        ){ %>
+
+                                            <span
+                                                class="badge bg-red">
+
+                                                Sản phẩm lỗi
+
+                                            </span>
+
+                                        <% } %>
+
+                                        <% if(
+                                            r.returnType ==
+                                            RETURN_TYPE.WRONG_PRODUCT
+                                        ){ %>
+
+                                            <span
+                                                class="badge bg-orange">
+
+                                                Sai mô tả
+
+                                            </span>
+
+                                        <% } %>
+
+                                        <% if(
+                                            r.returnType ==
+                                            RETURN_TYPE.REFUND
+                                        ){ %>
+
+                                            <span
+                                                class="badge bg-purple">
+
+                                                Hoàn tiền
+
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+                                    <!-- REASON -->
+
+                                    <td
+                                        style="
+                                            max-width:250px;
+                                        ">
+
+                                        <%= r.reason %>
+
+                                    </td>
+
+                                    <!-- ADMIN NOTE -->
+
+                                    <td
+                                        style="
+                                            min-width:220px;
+                                        ">
+
+                                        <textarea
+
+                                            class="form-control"
+
+                                            rows="2"
+
+                                            id="note-<%= r._id %>"
+
+                                            placeholder="Ghi chú xử lý..."><%= r.adminNote || '' %></textarea>
+
+                                    </td>
+
+                                    <!-- STATUS -->
+
+                                    <td
+                                        style="
+                                            min-width:180px;
+                                        ">
+
+                                        <select
+
+                                            class="form-control"
+
+                                            onchange="
+                                                updateStatus(
+                                                    '<%= r._id %>',
+                                                    this.value
+                                                )
+                                            ">
+
+                                            <option
+                                                value="1"
+
+                                                <%= r.status == 1
+                                                    ? 'selected'
+                                                    : '' %>>
+
+                                                Chờ xử lý
+
+                                            </option>
+
+                                            <option
+                                                value="2"
+
+                                                <%= r.status == 2
+                                                    ? 'selected'
+                                                    : '' %>>
+
+                                                Đã duyệt
+
+                                            </option>
+
+                                            <option
+                                                value="3"
+
+                                                <%= r.status == 3
+                                                    ? 'selected'
+                                                    : '' %>>
+
+                                                Từ chối
+
+                                            </option>
+
+                                            <option
+                                                value="4"
+
+                                                <%= r.status == 4
+                                                    ? 'selected'
+                                                    : '' %>>
+
+                                                Hoàn thành
+
+                                            </option>
+
+                                        </select>
+
+                                    </td>
+
+                                    <!-- CREATED -->
+
+                                    <td>
+
+                                        <%= new Date(
+                                            r.createdAt
+                                        ).toLocaleString(
+                                            'vi-VN'
+                                        ) %>
+
+                                    </td>
+
+                                    <!-- ACTION -->
+
+                                    <td>
+
+                                        <a
+
+                                            href="/return/detail/<%= r._id %>"
+
+                                            class="btn btn-info btn-sm">
+
+                                            Chi tiết
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= PAGINATION ================= -->
+
+<div class="row clearfix">
+
+    <% if(pages > 0) { %>
+
+        <ul class="pagination mx-auto">
+
+            <!-- FIRST -->
+
+            <li
+                class="page-item <%= current == 1 ? 'disabled' : '' %>">
+
+                <a
+
+                    class="page-link"
+
+                    href="/return?page=1
+                    &keyword=<%= keyword || '' %>
+                    &status=<%= selectedStatus || '' %>">
+
+                    First
+
+                </a>
+
+            </li>
+
+            <!-- PAGE NUMBER -->
+
+            <% for(let i = 1; i <= pages; i++){ %>
+
+                <li
+                    class="page-item <%= current == i ? 'active' : '' %>">
+
+                    <a
+
+                        class="page-link"
+
+                        href="/return?page=<%= i %>
+                        &keyword=<%= keyword || '' %>
+                        &status=<%= selectedStatus || '' %>">
+
+                        <%= i %>
+
+                    </a>
+
+                </li>
+
+            <% } %>
+
+            <!-- LAST -->
+
+            <li
+                class="page-item <%= current == pages ? 'disabled' : '' %>">
+
+                <a
+
+                    class="page-link"
+
+                    href="/return?page=<%= pages %>
+                    &keyword=<%= keyword || '' %>
+                    &status=<%= selectedStatus || '' %>">
+
+                    Last
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    <% } %>
+
+</div>
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+function searchReturn(){
+
+    const keyword =
+        document.getElementById(
+            'keyword'
+        ).value;
+
+    const status =
+        document.getElementById(
+            'status'
+        ).value;
+
+    let url =
+        `/return?keyword=${
+            encodeURIComponent(
+                keyword
+            )
+        }&status=${status}`;
+
+    window.location.href =
+        url;
+
+}
+
+/* =====================================================
+    UPDATE STATUS
+===================================================== */
+
+async function updateStatus(
+    id,
+    status
+){
+
+    const adminNote =
+        document.getElementById(
+            `note-${id}`
+        ).value;
+
+    try{
+
+        const response =
+            await fetch(
+
+                `/return/update/${id}`,
+
+                {
+
+                    method: 'PUT',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json'
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            status,
+
+                            adminNote
+
+                        })
+
+                }
+
+            );
+
+        const result =
+            await response.text();
+
+        alert(result);
+
+        setTimeout(() => {
+
+            window.location.reload();
+
+        }, 500);
+
+    }
+    catch(err){
+
+        console.log(err);
+
+        alert(
+            'Update failed'
+        );
+
+    }
+
+}
+
+</script>

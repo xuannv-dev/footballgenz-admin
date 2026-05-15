@@ -1,0 +1,240 @@
+<div class="row clearfix">
+
+    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- ================= HEADER ================= -->
+
+            <div class="header">
+
+                <h2>
+                    🔄 CHI TIẾT YÊU CẦU ĐỔI TRẢ
+                </h2>
+
+            </div>
+
+            <!-- ================= BODY ================= -->
+
+            <div class="body">
+
+                <!-- ORDER CODE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Mã đơn hàng
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= request.orderCode %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- CUSTOMER -->
+
+                <div class="form-group">
+
+                    <label>
+                        Khách hàng
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= request.customerName %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- RETURN TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Loại yêu cầu
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        style="
+                            text-align:left;
+                        "
+
+                        value="<% if(request.returnType == RETURN_TYPE.SIZE){ %>Đổi size<% } %><% if(request.returnType == RETURN_TYPE.DEFECT){ %>Sản phẩm lỗi<% } %><% if(request.returnType == RETURN_TYPE.WRONG_PRODUCT){ %>Không đúng mô tả<% } %><% if(request.returnType == RETURN_TYPE.REFUND){ %>Hoàn tiền<% } %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- CREATED -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ngày tạo yêu cầu
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= new Date(
+                            request.createdAt
+                        ).toLocaleString(
+                            'vi-VN'
+                        ) %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label>
+                        Trạng thái xử lý
+                    </label>
+
+                    <div
+                        style="
+                            margin-top:10px;
+                        ">
+
+                        <% if(
+                            request.status ==
+                            RETURN_STATUS.PENDING
+                        ){ %>
+
+                            <span
+                                class="badge bg-orange">
+
+                                Chờ xử lý
+
+                            </span>
+
+                        <% } %>
+
+                        <% if(
+                            request.status ==
+                            RETURN_STATUS.APPROVED
+                        ){ %>
+
+                            <span
+                                class="badge bg-green">
+
+                                Đã duyệt
+
+                            </span>
+
+                        <% } %>
+
+                        <% if(
+                            request.status ==
+                            RETURN_STATUS.REJECTED
+                        ){ %>
+
+                            <span
+                                class="badge bg-red">
+
+                                Từ chối
+
+                            </span>
+
+                        <% } %>
+
+                        <% if(
+                            request.status ==
+                            RETURN_STATUS.COMPLETED
+                        ){ %>
+
+                            <span
+                                class="badge bg-blue">
+
+                                Hoàn thành
+
+                            </span>
+
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+                <!-- REASON -->
+
+                <div class="form-group">
+
+                    <label>
+                        Lý do đổi trả
+                    </label>
+
+                    <textarea
+
+                        class="form-control"
+
+                        rows="5"
+
+                        readonly><%= request.reason %></textarea>
+
+                </div>
+
+                <!-- ADMIN NOTE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ghi chú xử lý từ admin
+                    </label>
+
+                    <textarea
+
+                        class="form-control"
+
+                        rows="4"
+
+                        readonly><%= request.adminNote || '' %></textarea>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <a
+
+                    href="/return"
+
+                    class="btn btn-default">
+
+                    Quay lại
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,479 @@
+<div class="card">
+
+    <div class="header">
+        <h2>✏️ CHỈNH SỬA SẢN PHẨM</h2>
+    </div>
+
+    <div class="body">
+
+        <!-- NAME -->
+        <div class="form-group">
+            <label>Tên sản phẩm</label>
+
+            <input
+                type="text"
+                id="name"
+                class="form-control"
+                value="<%= product.name %>"
+            >
+        </div>
+
+        <!-- PRICE -->
+        <div class="form-group">
+            <label>Giá sản phẩm</label>
+
+            <input
+                type="number"
+                id="price"
+                class="form-control"
+                value="<%= product.price %>"
+            >
+        </div>
+
+        <!-- BRAND -->
+        <div class="form-group">
+            <label>Thương hiệu</label>
+
+            <select id="brand" class="form-control order-status-select">
+                        <option>Adidas</option>
+                        <option>Nike</option>
+                        <option>Puma</option>
+                        <option>Mizuno</option>
+                    </select>
+        </div>
+
+        <!-- GROUP -->
+        <div class="form-group">
+            <label>Danh mục</label>
+
+            <select id="group" class="form-control order-status-select">
+
+                <option
+                    value="GIAY"
+                    <%= product.group === 'GIAY' ? 'selected' : '' %>
+                >
+                    Giày
+                </option>
+
+                <option
+                    value="AO"
+                    <%= product.group === 'AO' ? 'selected' : '' %>
+                >
+                    Áo
+                </option>
+
+                <option
+                    value="PHUKIEN"
+                    <%= product.group === 'PHUKIEN' ? 'selected' : '' %>
+                >
+                    Phụ kiện
+                </option>
+
+            </select>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="form-group">
+            <label>Mô tả sản phẩm</label>
+
+            <textarea
+                id="description"
+                class="form-control summernote"
+            ><%- product.description %></textarea>
+        </div>
+
+        <hr>
+
+        <!-- IMAGES -->
+        <h4>🖼 Ảnh sản phẩm</h4>
+
+        <input
+            type="file"
+            id="files"
+            multiple
+            class="form-control"
+        >
+
+        <br>
+
+        <!-- PREVIEW -->
+        <div
+            id="preview-images"
+            style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <% product.images.forEach((img,index)=>{ %>
+
+                <div
+                    class="image-item"
+                    data-url="<%= img %>"
+                    style="position:relative;"
+                >
+
+                    <img
+                        src="<%= img %>"
+                        width="120"
+                        style="
+                            border-radius:8px;
+                            border:1px solid #ddd;
+                        "
+                    >
+
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-sm remove-image"
+                        style="
+                            position:absolute;
+                            top:0;
+                            right:0;
+                        "
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+        <hr>
+
+        <!-- VARIANTS -->
+        <h4>📦 Biến thể sản phẩm</h4>
+
+        <table class="table table-bordered">
+
+            <thead>
+                <tr>
+                    <th>Size</th>
+                    <th>Màu</th>
+                    <th>Tồn kho</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody id="variant-body">
+
+                <% product.variants.forEach(v=>{ %>
+
+                    <tr>
+
+                        <td>
+                            <input
+                                type="text"
+                                class="form-control size"
+                                value="<%= v.size %>"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                type="text"
+                                class="form-control color"
+                                value="<%= v.color %>"
+                            >
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                class="form-control stock"
+                                value="<%= v.stock %>"
+                            >
+                        </td>
+
+                        <td>
+                            <button
+                                class="btn btn-danger btn-remove-variant"
+                            >
+                                Xóa
+                            </button>
+                        </td>
+
+                    </tr>
+
+                <% }) %>
+
+            </tbody>
+
+        </table>
+
+        <button
+            type="button"
+            class="btn btn-success"
+            id="btn-add-variant"
+        >
+            + Thêm biến thể
+        </button>
+
+        <hr>
+
+        <!-- STATUS -->
+        <div class="form-group">
+
+            <label>Trạng thái</label>
+
+            <select id="isActive" class="form-control">
+
+                <option
+                    value="true"
+                    <%= product.isActive ? 'selected' : '' %>
+                >
+                    Đang bán
+                </option>
+
+                <option
+                    value="false"
+                    <%= !product.isActive ? 'selected' : '' %>
+                >
+                    Ngừng bán
+                </option>
+
+            </select>
+
+        </div>
+
+        <br>
+
+        <button
+            class="btn btn-primary"
+            id="btn-update"
+        >
+            💾 Cập nhật sản phẩm
+        </button>
+
+        <a href="/product" class="btn btn-default">
+            ← Quay lại
+        </a>
+
+    </div>
+</div>
+
+<script>
+
+window.addEventListener('load', function(){
+
+    $('.summernote').summernote({
+        height: 250
+    });
+
+    let uploadedImages = <%- JSON.stringify(product.images) %>;
+
+    // ================= REMOVE IMAGE =================
+
+    $(document).on('click','.remove-image',function(){
+
+        $(this).parent().remove();
+
+    });
+
+    // ================= ADD VARIANT =================
+
+    $('#btn-add-variant').click(function(){
+
+        $('#variant-body').append(`
+
+            <tr>
+
+                <td>
+                    <input
+                        type="text"
+                        class="form-control size"
+                    >
+                </td>
+
+                <td>
+                    <input
+                        type="text"
+                        class="form-control color"
+                    >
+                </td>
+
+                <td>
+                    <input
+                        type="number"
+                        class="form-control stock"
+                        value="0"
+                    >
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn btn-danger btn-remove-variant">
+
+                        Xóa
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `);
+
+    });
+
+    // ================= REMOVE VARIANT =================
+
+    $(document).on('click','.btn-remove-variant',function(){
+
+        $(this).closest('tr').remove();
+
+    });
+
+    // ================= UPLOAD IMAGE =================
+
+    $('#files').change(async function(){
+
+        const files = this.files;
+
+        for(let file of files){
+
+            let formData = new FormData();
+
+            formData.append('file',file);
+
+            formData.append(
+                'group',
+                $('#group').val()
+            );
+
+            const res = await fetch('/upload',{
+
+                method:'POST',
+
+                body:formData
+
+            });
+
+            const url = await res.text();
+
+            uploadedImages.push(url);
+
+            $('#preview-images').append(`
+
+                <div
+                    class="image-item"
+                    data-url="${url}"
+                    style="position:relative;"
+                >
+
+                    <img
+                        src="${url}"
+                        width="120"
+                        style="
+                            border-radius:8px;
+                            border:1px solid #ddd;
+                        "
+                    >
+
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-sm remove-image"
+                        style="
+                            position:absolute;
+                            top:0;
+                            right:0;
+                        "
+                    >
+
+                        ×
+
+                    </button>
+
+                </div>
+
+            `);
+
+        }
+
+    });
+
+    // ================= UPDATE PRODUCT =================
+
+    $('#btn-update').click(async function(){
+
+        const variants = [];
+
+        $('#variant-body tr').each(function(){
+
+            variants.push({
+
+                size: $(this).find('.size').val(),
+
+                color: $(this).find('.color').val(),
+
+                stock: Number(
+                    $(this).find('.stock').val()
+                )
+
+            });
+
+        });
+
+        const images = [];
+
+        $('.image-item').each(function(){
+
+            images.push($(this).data('url'));
+
+        });
+
+        const body = {
+
+            name: $('#name').val(),
+
+            price: Number($('#price').val()),
+
+            brand: $('#brand').val(),
+
+            group: $('#group').val(),
+
+            description:
+                $('#description')
+                    .summernote('code'),
+
+            images,
+
+            variants,
+
+            isActive:
+                $('#isActive').val() === 'true'
+
+        };
+
+        const res = await fetch(
+
+            '/product/update/<%= product.productCode %>',
+
+            {
+
+                method:'PUT',
+
+                headers:{
+                    'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify(body)
+
+            }
+
+        );
+
+        const text = await res.text();
+
+        alert(text);
+
+        // location.reload();
+        window.location.href = '/product';
+    });
+
+});
+
+</script>
