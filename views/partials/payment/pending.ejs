@@ -1,0 +1,289 @@
+<div class="row clearfix">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="header">
+                <h2>💳 QUẢN LÝ THANH TOÁN CHUYỂN KHOẢN</h2>
+            </div>
+
+            <div class="body">
+                <div id="loadingSpinner" class="text-center" style="padding: 40px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+                <div id="paymentTable" style="display: none;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Người nhận</th>
+                                <th>SĐT</th>
+                                <th>Số tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thời gian</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersList"></tbody>
+                    </table>
+                </div>
+
+                <div id="emptyMessage" style="display: none; text-align: center; padding: 40px;">
+                    <p style="color: #999; font-size: 16px;">Không có đơn hàng chờ xác nhận thanh toán</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CHI TIẾT -->
+<div class="modal fade" id="orderModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết đơn hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadPendingPayments() {
+    try {
+        const response = await fetch('/order/payment/pending');
+        const data = await response.json();
+
+        if (data.success) {
+            const ordersList = document.getElementById('ordersList');
+            const paymentTable = document.getElementById('paymentTable');
+            const emptyMessage = document.getElementById('emptyMessage');
+
+            if (data.orders.length > 0) {
+                paymentTable.style.display = '';
+                emptyMessage.style.display = 'none';
+                renderOrders(data.orders);
+            } else {
+                paymentTable.style.display = 'none';
+                emptyMessage.style.display = '';
+            }
+        }
+        document.getElementById('loadingSpinner').style.display = 'none';
+    } catch (error) {
+        console.error('Error loading payments:', error);
+        document.getElementById('loadingSpinner').innerHTML = '<p style="color: red;">❌ Lỗi tải dữ liệu</p>';
+    }
+}
+
+function renderOrders(orders) {
+    const tbody = document.getElementById('ordersList');
+    tbody.innerHTML = '';
+
+    orders.forEach(order => {
+        const statusBadge = getStatusBadge(order.paymentStatus);
+        const createdDate = new Date(order.createdAt).toLocaleString('vi-VN');
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${order.code}</strong></td>
+            <td>${order.receiver}</td>
+            <td>${order.phoneContact}</td>
+            <td><strong>${order.totalprice.toLocaleString()}₫</strong></td>
+            <td>${statusBadge}</td>
+            <td><small>${createdDate}</small></td>
+            <td>
+                <button class="btn btn-sm btn-info" onclick="viewDetails('${order.code}')">
+                    👁️ Xem
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getStatusBadge(status) {
+    const badges = {
+        'awaiting_payment': '<span class="badge badge-warning">⏳ Chờ thanh toán</span>',
+        'verified': '<span class="badge badge-info">✓ Chờ xác nhận</span>',
+        'confirmed': '<span class="badge badge-success">✅ Đã xác nhận</span>'
+    };
+    return badges[status] || status;
+}
+
+async function viewDetails(orderCode) {
+    console.log("View order:", orderCode);
+    try {
+        const response = await fetch(`/order/payment/details/${orderCode}`);
+        const data = await response.json();
+        console.log(data);
+        if (data.success) {
+            const order = data.order;
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h5>Thông tin đơn hàng</h5>
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Mã đơn:</strong></td>
+                            <td>${order.code}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Người nhận:</strong></td>
+                            <td>${order.receiver}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SĐT:</strong></td>
+                            <td>${order.phoneContact}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Địa chỉ:</strong></td>
+                            <td>${order.addressShip}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Số tiền:</strong></td>
+                            <td style="color: #d0021b; font-weight: bold; font-size: 16px;">
+                                ${order.totalprice.toLocaleString()}₫
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h5>Sản phẩm</h5>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Size/Màu</th>
+                                <th>SL</th>
+                                <th>Giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            order.products.forEach(p => {
+                html += `
+                    <tr>
+                        <td>${p.productname}</td>
+                        <td>${p.size} / ${p.color}</td>
+                        <td>${p.quantity}</td>
+                        <td>${p.price.toLocaleString()}₫</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            if (order.paymentVerifications && order.paymentVerifications.length > 0) {
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <h5>Xác nhận thanh toán</h5>
+                `;
+                order.paymentVerifications.forEach(v => {
+                    html += `
+                        <div style="padding: 10px; background: #f9f9f9; border-radius: 4px; margin-bottom: 10px;">
+                            <strong>Số tiền:</strong> ${v.amount.toLocaleString()}₫<br>
+                            <strong>Thời gian:</strong> ${new Date(v.verifiedAt).toLocaleString('vi-VN')}<br>
+                            <strong>Người xác nhận:</strong> ${v.verifiedBy}<br>
+                            ${v.proof ? `<strong>Chứng minh:</strong> <a href="${v.proof}" target="_blank">Xem ảnh</a><br>` : ''}
+                            ${v.note ? `<strong>Ghi chú:</strong> ${v.note}<br>` : ''}
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            html += `
+                <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+                    <button class="btn btn-success" onclick="confirmPayment('${orderCode}')">
+                        ✅ Xác nhận thanh toán
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectPayment('${orderCode}')">
+                        ❌ Từ chối
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('modalBody').innerHTML = html;
+
+            $('#orderModal').modal({
+                backdrop: true,
+                keyboard: true,
+                show: true
+            });
+        }
+    } catch (error) {
+        console.error('Error loading details:', error);
+        alert('Lỗi tải chi tiết');
+    }
+}
+
+async function confirmPayment(orderCode) {
+    if (confirm('Xác nhận đã nhận được tiền từ khách hàng?')) {
+        try {
+            const response = await fetch(`/order/payment/confirm/${orderCode}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ ' + data.message);
+                document.getElementById('orderModal').classList.remove('show');
+                document.getElementById('orderModal').style.display = 'none';
+                loadPendingPayments();
+            } else {
+                alert('❌ ' + (data.message || 'Lỗi'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Lỗi');
+        }
+    }
+}
+
+async function rejectPayment(orderCode) {
+    const reason = prompt('Nhập lý do từ chối:');
+    if (reason !== null) {
+        try {
+            const response = await fetch(`/order/payment/reject/${orderCode}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ ' + data.message);
+                document.getElementById('orderModal').classList.remove('show');
+                document.getElementById('orderModal').style.display = 'none';
+                loadPendingPayments();
+            } else {
+                alert('❌ ' + (data.message || 'Lỗi'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Lỗi');
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadPendingPayments();
+    setInterval(loadPendingPayments, 30000);
+});
+</script>

@@ -4,7 +4,7 @@ var router = express.Router();
 const Order = require('../models/order');
 const Product = require('../models/product');
 
-const { ORDER_STATUS } =
+const { ORDER_STATUS, PAYMENT_STATUS } =
     require('../models/order');
 
 /* =====================================================
@@ -525,5 +525,146 @@ function getRandomString(length){
     return result;
 
 }
+
+/* =====================================================
+    PAYMENT VERIFICATION - LIST PENDING
+===================================================== */
+
+router.get('/payment/pending', async (req, res) => {
+    try {
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+        const pageSize = 10;
+        const skip = (page - 1) * pageSize;
+
+        const orders = await Order.find({
+            typePay: 1,
+            paymentStatus: { $in: [PAYMENT_STATUS.AWAITING, PAYMENT_STATUS.VERIFIED] }
+        })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(pageSize);
+
+        const total = await Order.countDocuments({
+            typePay: 1,
+            paymentStatus: { $in: [PAYMENT_STATUS.AWAITING, PAYMENT_STATUS.VERIFIED] }
+        });
+
+        res.json({
+            success: true,
+            orders,
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize)
+        });
+    } catch (error) {
+        console.error('[PAYMENT PENDING]', error);
+        res.status(500).json({ success: false, message: 'Lỗi' });
+    }
+});
+
+/* =====================================================
+    PAYMENT VERIFICATION - CONFIRM PAYMENT
+===================================================== */
+
+router.post('/payment/confirm/:orderCode', async (req, res) => {
+    try {
+        const { orderCode } = req.params;
+        const { note } = req.body;
+
+        const order = await Order.findOne({ code: orderCode });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Đơn hàng không tồn tại' });
+        }
+
+        if (order.typePay !== 1) {
+            return res.status(400).json({ success: false, message: 'Đơn hàng này không dùng chuyển khoản' });
+        }
+
+        // Update payment status
+        order.paymentStatus = PAYMENT_STATUS.CONFIRMED;
+        order.paymentConfirmedAt = new Date();
+        order.paymentConfirmedBy = req.session.passport?.user || 'admin';
+
+        await order.save();
+
+        res.json({
+            success: true,
+            message: 'Đã xác nhận thanh toán',
+            paymentStatus: order.paymentStatus
+        });
+    } catch (error) {
+        console.error('[CONFIRM PAYMENT]', error);
+        res.status(500).json({ success: false, message: 'Lỗi khi xác nhận' });
+    }
+});
+
+/* =====================================================
+    PAYMENT VERIFICATION - REJECT PAYMENT
+===================================================== */
+
+router.post('/payment/reject/:orderCode', async (req, res) => {
+    try {
+        const { orderCode } = req.params;
+        const { reason } = req.body;
+
+        const order = await Order.findOne({ code: orderCode });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Đơn hàng không tồn tại' });
+        }
+
+        // Reset to awaiting
+        order.paymentStatus = PAYMENT_STATUS.AWAITING;
+        order.paymentVerifications = [];
+        order.note = (order.note || '') + `\n[REJECTED] ${reason || 'Không có lý do'}`;
+
+        await order.save();
+
+        res.json({
+            success: true,
+            message: 'Đã từ chối xác nhận thanh toán',
+            paymentStatus: order.paymentStatus
+        });
+    } catch (error) {
+        console.error('[REJECT PAYMENT]', error);
+        res.status(500).json({ success: false, message: 'Lỗi' });
+    }
+});
+
+/* =====================================================
+    PAYMENT VERIFICATION - GET ORDER DETAILS
+===================================================== */
+
+router.get('/payment/details/:orderCode', async (req, res) => {
+    try {
+        const { orderCode } = req.params;
+
+        const order = await Order.findOne({ code: orderCode });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Đơn hàng không tồn tại' });
+        }
+
+        res.json({
+            success: true,
+            order: {
+                code: order.code,
+                totalprice: order.totalprice,
+                receiver: order.receiver,
+                phoneContact: order.phoneContact,
+                addressShip: order.addressShip,
+                paymentStatus: order.paymentStatus,
+                paymentVerifications: order.paymentVerifications,
+                createdAt: order.createdAt,
+                products: order.products
+            }
+        });
+    } catch (error) {
+        console.error('[PAYMENT DETAILS]', error);
+        res.status(500).json({ success: false, message: 'Lỗi' });
+    }
+});
 
 module.exports = router;

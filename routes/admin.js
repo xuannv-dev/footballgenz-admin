@@ -74,4 +74,10 @@ router.get('/', async function(req, res) {
 
 });
 
+/* ================= PAYMENT MANAGEMENT ================= */
+
+router.get('/payment/pending', function(req, res) {
+    res.render('partials/payment/pending');
+});
+
 module.exports = router;

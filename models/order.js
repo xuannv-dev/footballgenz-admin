@@ -9,6 +9,14 @@ const ORDER_STATUS = {
     COMPLETED: 4      // hoàn thành
 };
 
+// 👉 payment status
+const PAYMENT_STATUS = {
+    PENDING: 'pending',           // chờ xác nhận
+    AWAITING: 'awaiting_payment', // chờ thanh toán
+    VERIFIED: 'verified',         // đã xác nhận
+    CONFIRMED: 'confirmed'        // đã confirm bởi admin
+};
+
 const OrderSchema = new mongoose.Schema({
     code: {
         type: String,
@@ -79,9 +87,27 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         enum: Object.values(ORDER_STATUS),
         default: ORDER_STATUS.RECEIVED
-    }
+    },
+
+    paymentStatus: {
+        type: String,
+        enum: Object.values(PAYMENT_STATUS),
+        default: PAYMENT_STATUS.PENDING
+    },
+
+    paymentVerifications: [{
+        amount: Number,
+        verifiedAt: Date,
+        verifiedBy: String,
+        proof: String,
+        note: String
+    }],
+
+    paymentConfirmedAt: Date,
+    paymentConfirmedBy: String
 
 }, { timestamps: true });
 
 module.exports = mongoose.model('order', OrderSchema);
 module.exports.ORDER_STATUS = ORDER_STATUS;
+module.exports.PAYMENT_STATUS = PAYMENT_STATUS;
