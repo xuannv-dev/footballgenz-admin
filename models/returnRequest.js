@@ -28,36 +28,135 @@ const RETURN_TYPE = {
 const ReturnRequestSchema =
     new mongoose.Schema({
 
+        // ================= ORDER =================
+
         orderCode: {
+
             type: String,
+
             required: true
+
+        },
+
+        // ================= CUSTOMER =================
+
+        customerId: {
+
+            type:
+                mongoose.Schema.Types.ObjectId,
+
+            ref: 'user'
+
         },
 
         customerName: {
+
             type: String,
+
             default: ''
+
         },
 
-        returnType: {
+        // ================= PRODUCT SNAPSHOT =================
+
+        productCode: {
+
+            type: String,
+
+            required: true
+
+        },
+
+        productname: {
+
+            type: String,
+
+            default: ''
+
+        },
+
+        image: {
+
+            type: String,
+
+            default: ''
+
+        },
+
+        size: {
+
+            type: String,
+
+            default: ''
+
+        },
+
+        color: {
+
+            type: String,
+
+            default: ''
+
+        },
+
+        quantity: {
+
             type: Number,
+
+            default: 1
+
+        },
+
+        price: {
+
+            type: Number,
+
+            default: 0
+
+        },
+
+        // ================= RETURN =================
+
+        returnType: {
+
+            type: Number,
+
             default:
                 RETURN_TYPE.SIZE
+
         },
 
         reason: {
+
             type: String,
+
             default: ''
+
         },
 
+        evidenceImages: [{
+
+            type: String
+
+        }],
+
+        // ================= ADMIN =================
+
         adminNote: {
+
             type: String,
+
             default: ''
+
         },
 
         status: {
+
             type: Number,
+
             default:
                 RETURN_STATUS.PENDING
+
         }
 
     }, {

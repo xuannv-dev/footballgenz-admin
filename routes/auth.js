@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const admin = require('../models/admin');
 const passport = require('passport');
-const bcrypt = require('bcrypt');
 
 //GET LOGIN, SIGNUP PAGE
 router.get('/', function (req, res) {
@@ -28,14 +26,6 @@ router.post(
         res.redirect('/');
     }
 );
-router.get('/signup', async function (req, res, next) {
-    const newadmin = new admin();
-    newadmin.email = 'abc@gmail.com';
-    const password = await bcrypt.hash('123', 10);
-    newadmin.password = password;
-    await newadmin.save();
-    res.send(`sign up successfully`);
-});
 router.get('/logout', function (req, res) {
     req.logOut();
     res.redirect('/');

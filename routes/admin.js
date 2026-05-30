@@ -41,7 +41,7 @@ router.get('/', async function(req, res) {
 
         completedOrders.forEach(order => {
 
-            totalRevenue += order.totalPrice || 0;
+            totalRevenue += order.totalprice || 0;
 
         });
 

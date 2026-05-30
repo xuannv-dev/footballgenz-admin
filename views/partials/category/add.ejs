@@ -54,7 +54,7 @@
             </label>
 
             <select
-                id="isactive"
+                id="isActive"
                 class="form-control order-status-select">
 
                 <option value="true">
@@ -212,8 +212,8 @@ $('#btnAdd').click(function(){
         .split('|')
         .map(item => item.trim());
 
-    let isactive =
-        $('#isactive').val() === 'true';
+    let isActive =
+        $('#isActive').val() === 'true';
 
     if(!group){
 
@@ -231,7 +231,7 @@ $('#btnAdd').click(function(){
 
         image: imageUrl,
 
-        isactive
+        isActive
 
     };
 

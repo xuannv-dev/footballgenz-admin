@@ -19,7 +19,6 @@ var adminRouter = require('./routes/admin');
 var authRouter = require('./routes/auth');
 var productRouter = require('./routes/product');
 var uploadRouter = require('./routes/upload');
-var billRouter = require('./routes/bill');
 var cateRouter= require('./routes/category');
 var orderRouter= require('./routes/order');
 var adminUserRouter = require('./routes/admin-user');
@@ -93,12 +92,11 @@ app.use('/', authMiddleware.isAdmin, indexRouter);
 app.use('/admin', authMiddleware.isAdmin, adminRouter);
 app.use('/product', authMiddleware.isAdmin, productRouter);
 app.use('/upload', authMiddleware.isAdmin, uploadRouter);
-app.use('/bill', authMiddleware.isAdmin, billRouter);
 app.use('/category', authMiddleware.isAdmin, cateRouter);
 app.use('/order', authMiddleware.isAdmin, orderRouter);
 app.use('/admin-user', authMiddleware.isAdmin, adminUserRouter);
 app.use('/news', authMiddleware.isAdmin, newsRouter);
-app.use('/return', returnRouter);
+app.use('/return', authMiddleware.isAdmin, returnRouter);
 
 // USER (nếu cần giữ)
 app.use('/user', authMiddleware.enforceAuthentication, userRouter);

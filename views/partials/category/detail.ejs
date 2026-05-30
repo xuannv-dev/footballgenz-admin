@@ -38,15 +38,15 @@
         <div class="form-group">
             <label>Trạng thái</label>
 
-            <select id="isactive" class="form-control order-status-select">
+            <select id="isActive" class="form-control order-status-select">
 
                 <option value="true"
-                    <%= category.isactive == true ? 'selected' : '' %>>
+                    <%= category.isActive == true ? 'selected' : '' %>>
                     Hoạt động
                 </option>
 
                 <option value="false"
-                    <%= category.isactive == false ? 'selected' : '' %>>
+                    <%= category.isActive == false ? 'selected' : '' %>>
                     Tạm khóa
                 </option>
 
@@ -151,7 +151,7 @@ function updateCategory(){
 
             image: $('#image').val(),
 
-            isactive: $('#isactive').val()
+            isActive: $('#isActive').val()
 
         }),
 

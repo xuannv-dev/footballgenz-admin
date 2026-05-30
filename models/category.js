@@ -5,7 +5,7 @@ const CategorySchema = new mongoose.Schema({
     group: String,
     type: Array,
     image: String,
-    isactive: Boolean
+    isActive: Boolean
 })
 
 module.exports = mongoose.model('category',CategorySchema)

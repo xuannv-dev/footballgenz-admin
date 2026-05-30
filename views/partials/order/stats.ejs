@@ -1,0 +1,143 @@
+<%
+const money = (n) => formatCurrency(n);
+
+const typeLabel = {
+    day:   '7 ngày gần nhất',
+    week:  'Theo tuần (tuần này)',
+    month: 'Theo tháng (năm nay)',
+    range: 'Khoảng thời gian tùy chọn'
+};
+
+function rowLabel(row) {
+    if (row._id.week) return `Tuần ${row._id.week} / ${row._id.year}`;
+    if (row._id.day)  return `${row._id.day}/${row._id.month}/${row._id.year}`;
+    return `Tháng ${row._id.month}/${row._id.year}`;
+}
+%>
+
+<div class="card">
+
+    <div class="header">
+        <h2>📊 THỐNG KÊ ĐƠN HÀNG</h2>
+    </div>
+
+    <div class="body">
+
+        <!-- ===== FILTER ===== -->
+        <form method="GET" action="/order/stats"
+            style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">
+
+            <div>
+                <label>Loại thống kê</label>
+                <select name="type" class="form-control" id="statsType" onchange="toggleRange(this.value)" style="width:200px;">
+                    <option value="day"   <%= type === 'day'   ? 'selected' : '' %>>7 ngày gần nhất</option>
+                    <option value="week"  <%= type === 'week'  ? 'selected' : '' %>>Tuần này</option>
+                    <option value="month" <%= type === 'month' ? 'selected' : '' %>>Theo tháng (năm nay)</option>
+                    <option value="range" <%= type === 'range' ? 'selected' : '' %>>Khoảng tùy chọn</option>
+                </select>
+            </div>
+
+            <div id="rangeFields" style="display:<%= type === 'range' ? 'flex' : 'none' %>;gap:10px;">
+                <div>
+                    <label>Từ ngày</label>
+                    <input type="date" name="from" class="form-control" value="<%= from %>">
+                </div>
+                <div>
+                    <label>Đến ngày</label>
+                    <input type="date" name="to" class="form-control" value="<%= to %>">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-bottom:1px;">
+                Xem thống kê
+            </button>
+
+            <a href="/order" class="btn btn-default" style="margin-bottom:1px;">
+                ← Đơn hàng
+            </a>
+
+        </form>
+
+        <!-- ===== SUMMARY ===== -->
+        <div class="row clearfix" style="margin-bottom:20px;">
+
+            <div class="col-md-4">
+                <div class="card" style="background:#27ae60;color:#fff;padding:20px;border-radius:8px;">
+                    <h4 style="margin:0 0 8px;">💰 Doanh thu</h4>
+                    <h2 style="margin:0;"><%= money(summary.revenue) %></h2>
+                    <small><%= typeLabel[type] %></small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card" style="background:#2980b9;color:#fff;padding:20px;border-radius:8px;">
+                    <h4 style="margin:0 0 8px;">📦 Đơn hoàn thành</h4>
+                    <h2 style="margin:0;"><%= summary.orderCount %></h2>
+                    <small><%= typeLabel[type] %></small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card" style="background:#8e44ad;color:#fff;padding:20px;border-radius:8px;">
+                    <h4 style="margin:0 0 8px;">📈 Trung bình / đơn</h4>
+                    <h2 style="margin:0;">
+                        <%= summary.orderCount > 0 ? money(Math.round(summary.revenue / summary.orderCount)) : '0₫' %>
+                    </h2>
+                    <small><%= typeLabel[type] %></small>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== TABLE ===== -->
+        <% if (rawData.length === 0) { %>
+
+            <div class="alert alert-warning">
+                Không có đơn hoàn thành trong khoảng thời gian này.
+            </div>
+
+        <% } else { %>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kỳ</th>
+                            <th>Số đơn hoàn thành</th>
+                            <th>Doanh thu</th>
+                            <th>Trung bình / đơn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% rawData.forEach(row => { %>
+                            <tr>
+                                <td><b><%= rowLabel(row) %></b></td>
+                                <td><%= row.orderCount %></td>
+                                <td><%= money(row.revenue) %></td>
+                                <td><%= money(Math.round(row.revenue / row.orderCount)) %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight:bold;background:#f5f5f5;">
+                            <td>Tổng</td>
+                            <td><%= summary.orderCount %></td>
+                            <td><%= money(summary.revenue) %></td>
+                            <td>—</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        <% } %>
+
+    </div>
+
+</div>
+
+<script>
+function toggleRange(val) {
+    document.getElementById('rangeFields').style.display =
+        val === 'range' ? 'flex' : 'none';
+}
+</script>

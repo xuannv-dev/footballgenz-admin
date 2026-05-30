@@ -212,17 +212,41 @@ const money = (n) => {
 
                 <div class="table-responsive">
 
-                    <table class="table table-bordered table-hover">
+                    <table
+                        class="table table-bordered table-hover">
 
                         <thead>
 
                             <tr>
-                                <th>Mã SP</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Màu</th>
-                                <th>SL</th>
-                                <th>Đơn giá</th>
-                                <th>Thành tiền</th>
+
+                                <th width="120">
+                                    Ảnh
+                                </th>
+
+                                <th>
+                                    Sản phẩm
+                                </th>
+
+                                <th width="120">
+                                    Size
+                                </th>
+
+                                <th width="120">
+                                    Màu
+                                </th>
+
+                                <th width="100">
+                                    SL
+                                </th>
+
+                                <th width="140">
+                                    Đơn giá
+                                </th>
+
+                                <th width="160">
+                                    Thành tiền
+                                </th>
+
                             </tr>
 
                         </thead>
@@ -233,30 +257,89 @@ const money = (n) => {
 
                                 <tr>
 
-                                    <td>
-                                        <%= p.productCode %>
-                                    </td>
+                                    <!-- IMAGE -->
 
                                     <td>
-                                        <%= p.name %>
+
+                                        <img
+
+                                            src="<%= p.image %>"
+
+                                            style="
+                                                width:80px;
+                                                height:80px;
+                                                object-fit:cover;
+                                                border-radius:8px;
+                                            ">
+
                                     </td>
 
+                                    <!-- PRODUCT -->
+
                                     <td>
+
+                                        <div
+                                            style="
+                                                font-weight:600;
+                                                margin-bottom:6px;
+                                            ">
+
+                                            <%= p.productname %>
+
+                                        </div>
+
+                                        <div
+                                            style="
+                                                color:#999;
+                                                font-size:12px;
+                                            ">
+
+                                            <%= p.productCode %>
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- SIZE -->
+
+                                    <td>
+
+                                        <%= p.size || '---' %>
+
+                                    </td>
+
+                                    <!-- COLOR -->
+
+                                    <td>
+
                                         <%= p.color || '---' %>
+
                                     </td>
 
+                                    <!-- QUANTITY -->
+
                                     <td>
+
                                         <%= p.quantity %>
+
                                     </td>
 
+                                    <!-- PRICE -->
+
                                     <td>
+
                                         <%= money(p.price) %>
+
                                     </td>
+
+                                    <!-- TOTAL -->
 
                                     <td>
 
                                         <b>
+
                                             <%= money(p.price * p.quantity) %>
+
                                         </b>
 
                                     </td>

@@ -209,6 +209,33 @@ router.post('/add', async function(req, res){
 
         await order.save();
 
+        /* =====================================================
+            DECREASE STOCK
+        ===================================================== */
+
+        const products = Array.isArray(req.body.products)
+            ? req.body.products
+            : [req.body.products];
+
+        for (const item of products) {
+
+            await Product.updateOne(
+                {
+                    productCode: item.productCode,
+                    variants: {
+                        $elemMatch: {
+                            size: item.size,
+                            color: item.color
+                        }
+                    }
+                },
+                {
+                    $inc: { 'variants.$.stock': -Number(item.quantity) }
+                }
+            );
+
+        }
+
         res.send(
             'Create order success!'
         );
@@ -354,6 +381,118 @@ router.put(
 
     }
 );
+
+/* =====================================================
+    ORDER STATS
+===================================================== */
+
+router.get('/stats', async function(req, res) {
+
+    try {
+
+        const type = req.query.type || 'day';
+        const now  = new Date();
+
+        let from, to, groupBy, labelFn;
+
+        if (type === 'week') {
+
+            // Thứ 2 đầu tuần hiện tại
+            const day = now.getDay() || 7;
+            from = new Date(now);
+            from.setDate(now.getDate() - day + 1);
+            from.setHours(0, 0, 0, 0);
+            to = new Date();
+
+            groupBy = {
+                week: { $isoWeek: '$createdAt' },
+                year: { $isoWeekYear: '$createdAt' }
+            };
+
+        } else if (type === 'month') {
+
+            from = new Date(now.getFullYear(), 0, 1);
+            to   = new Date();
+
+            groupBy = {
+                month: { $month: '$createdAt' },
+                year:  { $year:  '$createdAt' }
+            };
+
+        } else if (type === 'range') {
+
+            from = req.query.from ? new Date(req.query.from) : new Date(now.setDate(now.getDate() - 29));
+            to   = req.query.to   ? new Date(req.query.to)   : new Date();
+            to.setHours(23, 59, 59, 999);
+
+            groupBy = {
+                day:   { $dayOfMonth: '$createdAt' },
+                month: { $month:      '$createdAt' },
+                year:  { $year:       '$createdAt' }
+            };
+
+        } else {
+
+            // Mặc định: 7 ngày gần nhất
+            from = new Date();
+            from.setDate(from.getDate() - 6);
+            from.setHours(0, 0, 0, 0);
+            to = new Date();
+
+            groupBy = {
+                day:   { $dayOfMonth: '$createdAt' },
+                month: { $month:      '$createdAt' },
+                year:  { $year:       '$createdAt' }
+            };
+
+        }
+
+        const rawData = await Order.aggregate([
+            {
+                $match: {
+                    status: 4,
+                    createdAt: { $gte: from, $lte: to }
+                }
+            },
+            {
+                $group: {
+                    _id: groupBy,
+                    revenue:    { $sum: '$totalprice' },
+                    orderCount: { $sum: 1 }
+                }
+            },
+            { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1, '_id.week': 1 } }
+        ]);
+
+        // Tổng trong khoảng
+        const summary = rawData.reduce(
+            (acc, row) => {
+                acc.revenue    += row.revenue;
+                acc.orderCount += row.orderCount;
+                return acc;
+            },
+            { revenue: 0, orderCount: 0 }
+        );
+
+        const formatCurrency = require('../utils/formatCurrency');
+
+        res.render('partials/order/stats', {
+            type,
+            from:  req.query.from  || '',
+            to:    req.query.to    || '',
+            rawData,
+            summary,
+            formatCurrency
+        });
+
+    } catch(err) {
+
+        console.log(err);
+        res.send('Error loading stats');
+
+    }
+
+});
 
 /* =====================================================
     HELPER

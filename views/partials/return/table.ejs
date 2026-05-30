@@ -281,14 +281,9 @@
 
                                         <select
 
-                                            class="form-control"
+                                            class="form-control return-status"
 
-                                            onchange="
-                                                updateStatus(
-                                                    '<%= r._id %>',
-                                                    this.value
-                                                )
-                                            ">
+                                            data-id="<%= r._id %>">
 
                                             <option
                                                 value="1"
@@ -308,7 +303,7 @@
                                                     ? 'selected'
                                                     : '' %>>
 
-                                                Đã duyệt
+                                                Đã chấp nhận
 
                                             </option>
 
@@ -330,7 +325,7 @@
                                                     ? 'selected'
                                                     : '' %>>
 
-                                                Hoàn thành
+                                                Đã hoàn tất
 
                                             </option>
 
@@ -354,15 +349,35 @@
 
                                     <td>
 
-                                        <a
+                                        <div style="
 
-                                            href="/return/detail/<%= r._id %>"
+                                            display:flex;
 
-                                            class="btn btn-info btn-sm">
+                                            gap:6px;
 
-                                            Chi tiết
+                                        ">
 
-                                        </a>
+                                            <button
+
+                                                class="btn btn-success btn-sm"
+
+                                                onclick="saveReturn('<%= r._id %>')">
+
+                                                Lưu
+
+                                            </button>
+
+                                            <a
+
+                                                href="/return/detail/<%= r._id %>"
+
+                                                class="btn btn-info btn-sm">
+
+                                                Chi tiết
+
+                                            </a>
+
+                                        </div>
 
                                     </td>
 
@@ -491,14 +506,20 @@ function searchReturn(){
     UPDATE STATUS
 ===================================================== */
 
-async function updateStatus(
-    id,
-    status
-){
+async function saveReturn(id){
 
     const adminNote =
+
         document.getElementById(
             `note-${id}`
+        ).value;
+
+    const status =
+
+        document.querySelector(
+
+            `.return-status[data-id="${id}"]`
+
         ).value;
 
     try{
@@ -510,7 +531,7 @@ async function updateStatus(
 
                 {
 
-                    method: 'PUT',
+                    method: 'POST',
 
                     headers: {
 
@@ -537,11 +558,15 @@ async function updateStatus(
 
         alert(result);
 
-        setTimeout(() => {
+        if(result.includes('success')){
 
-            window.location.reload();
+            setTimeout(() => {
 
-        }, 500);
+                window.location.reload();
+
+            }, 500);
+
+        }
 
     }
     catch(err){

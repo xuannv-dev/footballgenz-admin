@@ -1,46 +1,135 @@
+<%
+const money = (n) => formatCurrency(n);
+%>
+
 <div class="card">
+
     <div class="header">
         <h2>📊 THỐNG KÊ SẢN PHẨM</h2>
     </div>
 
-    <div class="body table-responsive">
-        <table class="table table-bordered table-hover">
+    <div class="body">
 
-            <thead>
-                <tr>
-                    <th>Mã SP</th>
-                    <th>Tên</th>
-                    <th>Tồn kho</th>
-                    <th>Đã bán</th>
-                    <th>Doanh thu</th>
-                </tr>
-            </thead>
+        <a href="/product" class="btn btn-default" style="margin-bottom:15px;">← Sản phẩm</a>
 
-            <tbody>
-                <% stats.forEach(p => { %>
-                    <tr>
-                        <td><%= p.productCode %></td>
-                        <td><%= p.name %></td>
+        <% stats.forEach((p, idx) => { %>
 
-                        <td>
-                            <span class="badge bg-blue">
-                                <%= p.stock %>
-                            </span>
-                        </td>
+        <!-- ===== PRODUCT HEADER ===== -->
+        <div class="card" style="margin-bottom:10px;border:1px solid #ddd;">
 
-                        <td>
-                            <span class="badge bg-green">
-                                <%= p.sold %>
-                            </span>
-                        </td>
+            <div class="header"
+                style="cursor:pointer;background:#f8f9fa;padding:12px 16px;"
+                onclick="toggleVariant(<%= idx %>)">
 
-                        <td style="color:red;">
-                            <%= p.revenue.toLocaleString() %>₫
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
 
-        </table>
+                    <div>
+                        <strong><%= p.name %></strong>
+                        <span style="color:#999;font-size:12px;margin-left:8px;"><%= p.productCode %></span>
+                    </div>
+
+                    <div style="display:flex;gap:16px;font-size:13px;">
+
+                        <span>
+                            Giá bán: <b style="color:#e74c3c;"><%= money(p.price) %></b>
+                        </span>
+
+                        <span>
+                            Giá nhập: <b style="color:#7f8c8d;"><%= money(p.costPrice) %></b>
+                        </span>
+
+                        <span>
+                            Tồn: <b style="color:#2980b9;"><%= p.totalStock %></b>
+                        </span>
+
+                        <span>
+                            Đã bán: <b style="color:#27ae60;"><%= p.totalSold %></b>
+                        </span>
+
+                        <span>
+                            Doanh thu: <b style="color:#8e44ad;"><%= money(p.totalRevenue) %></b>
+                        </span>
+
+                        <span>
+                            Lợi nhuận: <b style="color:#<%= p.totalProfit >= 0 ? '27ae60' : 'e74c3c' %>;">
+                                <%= money(p.totalProfit) %>
+                            </b>
+                        </span>
+
+                        <span>
+                            Biên lợi nhuận: <b><%= p.margin %>%</b>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ===== VARIANT TABLE ===== -->
+            <div id="variant-<%= idx %>" style="display:none;">
+
+                <div class="body table-responsive" style="padding:0;">
+
+                    <table class="table table-bordered" style="margin:0;">
+
+                        <thead style="background:#ecf0f1;">
+                            <tr>
+                                <th>Size</th>
+                                <th>Màu</th>
+                                <th>Tồn kho</th>
+                                <th>Đã bán</th>
+                                <th>Doanh thu</th>
+                                <th>Lợi nhuận</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% p.variantStats.forEach(v => { %>
+                                <tr>
+                                    <td><%= v.size || '—' %></td>
+                                    <td><%= v.color || '—' %></td>
+
+                                    <td>
+                                        <span class="label <%= v.stock <= 5 ? 'label-danger' : 'label-info' %>">
+                                            <%= v.stock %>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="label label-success"><%= v.sold %></span>
+                                    </td>
+
+                                    <td><%= money(v.revenue) %></td>
+
+                                    <td style="color:<%= v.profit >= 0 ? '#27ae60' : '#e74c3c' %>;">
+                                        <b><%= money(v.profit) %></b>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <% }) %>
+
+        <% if (stats.length === 0) { %>
+            <div class="alert alert-warning">Chưa có sản phẩm nào.</div>
+        <% } %>
+
     </div>
+
 </div>
+
+<script>
+function toggleVariant(idx) {
+    const el = document.getElementById('variant-' + idx);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>

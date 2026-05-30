@@ -1,6 +1,12 @@
 const express =
     require('express');
 
+const Order =
+    require('../models/order');
+
+const Product =
+    require('../models/product');
+
 const router =
     express.Router();
 
@@ -251,7 +257,7 @@ router.get(
     UPDATE STATUS
 ===================================================== */
 
-router.put(
+router.post(
     '/update/:id',
     async function(req, res){
 
@@ -323,7 +329,36 @@ router.put(
             request.adminNote =
                 req.body.adminNote || '';
 
-            await request.save();
+                        await request.save();
+
+            /* =========================================
+                RESTORE STOCK
+            ========================================= */
+
+            if(newStatus === 4){
+
+                const product =
+                    await Product.findOne({
+                        productCode: request.productCode
+                    });
+
+                if(product && product.variants){
+
+                    const variant =
+                        product.variants.find(v =>
+                            v.size == request.size
+                            &&
+                            v.color == request.color
+                        );
+
+                    if(variant){
+                        variant.stock += request.quantity;
+                        await product.save();
+                    }
+
+                }
+
+            }
 
             res.send(
                 'Update success'

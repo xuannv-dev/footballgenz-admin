@@ -672,95 +672,91 @@ router.get(
 
         try {
 
-            const products =
-                await Product.find();
+            const products = await Product.find().lean();
+            const Order    = require('../models/order');
 
-            const Order =
-                require('../models/order');
+            // ================= SOLD MAP BY VARIANT =================
+            // key = "productCode|size|color"
 
-            const orders =
-                await Order.find({
-                    status: 4
-                });
+            const variantSoldMap = {};
 
-            // ================= SOLD MAP =================
+            const completedOrders = await Order.find({ status: 4 }).lean();
 
-            const soldMap = {};
-
-            orders.forEach(order => {
+            completedOrders.forEach(order => {
 
                 order.products.forEach(p => {
 
-                    if (
-                        !soldMap[
-                            p.productCode
-                        ]
-                    ) {
+                    const key = `${p.productCode}|${p.size || ''}|${p.color || ''}`;
 
-                        soldMap[
-                            p.productCode
-                        ] = 0;
+                    if (!variantSoldMap[key]) variantSoldMap[key] = 0;
 
-                    }
-
-                    soldMap[
-                        p.productCode
-                    ] += p.quantity;
+                    variantSoldMap[key] += p.quantity;
 
                 });
 
             });
 
-            // ================= STATS =================
+            // ================= BUILD STATS PER PRODUCT =================
 
-            const stats =
-                products.map(p => {
+            const stats = products.map(p => {
 
-                    const stock =
-                        calculateStock(
-                            p.variants
-                        );
+                const totalStock = calculateStock(p.variants);
 
-                    const sold =
-                        soldMap[
-                            p.productCode
-                        ] || 0;
+                // Tổng sold toàn sản phẩm (tất cả variant)
+                let totalSold    = 0;
+                let totalRevenue = 0;
+                let totalProfit  = 0;
+
+                // Chi tiết từng variant
+                const variantStats = (p.variants || []).map(v => {
+
+                    const key  = `${p.productCode}|${v.size || ''}|${v.color || ''}`;
+                    const sold = variantSoldMap[key] || 0;
+
+                    const revenue = sold * p.price;
+                    const profit  = sold * (p.price - (p.costPrice || 0));
+
+                    totalSold    += sold;
+                    totalRevenue += revenue;
+                    totalProfit  += profit;
 
                     return {
-
-                        name:
-                            p.name,
-
-                        productCode:
-                            p.productCode,
-
-                        stock,
-
+                        size:    v.size,
+                        color:   v.color,
+                        stock:   v.stock,
                         sold,
-
-                        revenue:
-                            sold * p.price
-
+                        revenue,
+                        profit
                     };
 
                 });
 
+                return {
+                    name:         p.name,
+                    productCode:  p.productCode,
+                    price:        p.price,
+                    costPrice:    p.costPrice || 0,
+                    totalStock,
+                    totalSold,
+                    totalRevenue,
+                    totalProfit,
+                    margin: totalRevenue > 0
+                        ? Math.round((totalProfit / totalRevenue) * 100)
+                        : 0,
+                    variantStats
+                };
+
+            });
+
             res.render(
                 'partials/product/stats',
-                {
-
-                    stats,
-
-                    formatCurrency
-
-                }
+                { stats, formatCurrency }
             );
 
         }
         catch (err) {
 
             console.log(err);
-
             res.send('Error');
 
         }

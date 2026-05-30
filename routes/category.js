@@ -109,7 +109,7 @@ router.post('/add', async function (req, res) {
 
             image: req.body.image,
 
-            isactive: req.body.isactive === 'true'
+            isActive: req.body.isActive === 'true'
 
         });
 
@@ -147,7 +147,7 @@ router.put('/update/:id', async function (req, res) {
 
                     image: req.body.image,
 
-                    isactive: req.body.isactive === 'true'
+                    isActive: req.body.isActive === 'true'
 
                 }
             }
