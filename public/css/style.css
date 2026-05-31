@@ -3090,17 +3090,20 @@ section.content {
       .info-box .icon .chart.chart-line canvas {
         vertical-align: baseline !important; }
   .info-box .content {
-    display: inline-block;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding: 7px 10px; }
     .info-box .content .text {
       font-size: 13px;
-      margin-top: 11px;
-      color: #555; }
+      color: #fff;
+      opacity: 0.9; }
     .info-box .content .number {
-      font-weight: normal;
+      font-weight: bold;
       font-size: 26px;
-      margin-top: -4px;
-      color: #555; }
+      color: #fff;
+      margin-top: 4px; }
 
 .info-box.hover-zoom-effect .icon {
   overflow: hidden; }

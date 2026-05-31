@@ -29,7 +29,7 @@ cloudinary.config({
 const upload = multer({
 
     limits: {
-        fileSize: 5 * 1024 * 1024
+        fileSize: 10 * 1024 * 1024
     },
 
     fileFilter: (req, file, cb) => {
@@ -70,30 +70,47 @@ router.get('/', function (req, res) {
 
 // ================= UPLOAD IMAGE =================
 
-router.post(
-    '/',
-    upload.single('file'),
+router.post('/', function(req, res){
 
-    async function (req, res) {
+    upload.single('file')(req, res, async function(err){
 
-        try {
+        // ===== MULTER ERROR =====
 
-            // 🔥 VALIDATE FILE
+        if(err){
 
-            if (!req.file) {
+            if(err instanceof multer.MulterError){
 
-                return res
-                    .status(400)
-                    .send('File không hợp lệ');
+                if(err.code === 'LIMIT_FILE_SIZE'){
+
+                    return res.status(400).json({
+                        success:false,
+                        message:'Ảnh vượt quá 10MB'
+                    });
+
+                }
 
             }
 
-            // 🔥 CATEGORY FOLDER
+            return res.status(400).json({
+                success:false,
+                message: err.message
+            });
+
+        }
+
+        try{
+
+            if(!req.file){
+
+                return res.status(400).json({
+                    success:false,
+                    message:'Vui lòng chọn ảnh'
+                });
+
+            }
 
             const group =
                 req.body.group || 'common';
-
-            // 🔥 UPLOAD STREAM
 
             const result =
                 await uploadToCloudinary(
@@ -101,22 +118,26 @@ router.post(
                     group
                 );
 
-            // 🔥 RETURN URL
+            return res.json({
+                success:true,
+                url: result.secure_url
+            });
 
-            res.send(result.secure_url);
+        }
+        catch(error){
 
-        } catch (err) {
+            console.log(error);
 
-            console.log(err);
-
-            res
-                .status(500)
-                .send('Upload failed');
+            return res.status(500).json({
+                success:false,
+                message:'Upload thất bại'
+            });
 
         }
 
-    }
-);
+    });
+
+});
 
 
 // ================= HELPER =================

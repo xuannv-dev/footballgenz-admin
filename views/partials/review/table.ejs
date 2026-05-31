@@ -1,0 +1,341 @@
+<div class="row clearfix">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- HEADER -->
+
+            <div class="header">
+
+                <h2>
+                    ⭐ QUẢN LÝ ĐÁNH GIÁ SẢN PHẨM
+                </h2>
+
+            </div>
+
+            <!-- FILTER -->
+
+            <div
+                style="
+                    margin:15px;
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    align-items:center;
+                ">
+
+                <input
+
+                    type="text"
+
+                    id="keyword"
+
+                    value="<%= keyword || '' %>"
+
+                    placeholder="🔍 Tên khách hàng hoặc sản phẩm..."
+
+                    class="form-control"
+
+                    style="width:300px;"
+                >
+
+                <button
+                    class="btn btn-primary"
+                    onclick="searchReview()">
+
+                    Tìm kiếm
+
+                </button>
+
+            </div>
+
+            <!-- TABLE -->
+
+            <div class="body">
+
+                <div class="table-responsive">
+
+                    <table
+                        class="table table-bordered table-hover">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Khách hàng
+                                </th>
+
+                                <th>
+                                    Sản phẩm
+                                </th>
+
+                                <th>
+                                    Đánh giá
+                                </th>
+
+                                <th>
+                                    Nội dung
+                                </th>
+
+                                <th>
+                                    Trạng thái
+                                </th>
+
+                                <th>
+                                    Ngày tạo
+                                </th>
+
+                                <th>
+                                    Hành động
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <% reviews.forEach(function(r){ %>
+
+                                <tr>
+
+                                    <!-- CUSTOMER -->
+
+                                    <td>
+
+                                        <strong>
+                                            <%= r.customerName %>
+                                        </strong>
+
+                                    </td>
+
+                                    <!-- PRODUCT -->
+
+                                    <td>
+
+                                        <div
+                                            style="
+                                                display:flex;
+                                                align-items:center;
+                                                gap:10px;
+                                            ">
+
+                                            <img
+
+                                                src="<%= r.image %>"
+
+                                                style="
+                                                    width:50px;
+                                                    height:50px;
+                                                    object-fit:cover;
+                                                    border-radius:6px;
+                                                "
+                                            >
+
+                                            <div>
+
+                                                <%= r.productname %>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- RATING -->
+
+                                    <td>
+
+                                        <% for(let i=1;i<=5;i++){ %>
+
+                                            <% if(i <= r.rating){ %>
+
+                                                <span
+                                                    style="
+                                                        color:#ff9800;
+                                                        font-size:16px;
+                                                    ">
+                                                    ★
+                                                </span>
+
+                                            <% } else { %>
+
+                                                <span
+                                                    style="
+                                                        color:#ddd;
+                                                        font-size:16px;
+                                                    ">
+                                                    ★
+                                                </span>
+
+                                            <% } %>
+
+                                        <% } %>
+
+                                    </td>
+
+                                    <!-- COMMENT -->
+
+                                    <td
+                                        style="
+                                            max-width:300px;
+                                        ">
+
+                                        <%= r.comment %>
+
+                                    </td>
+
+                                    <!-- STATUS -->
+
+                                    <td>
+
+                                        <% if(r.isActive){ %>
+
+                                            <span
+                                                class="badge bg-green">
+
+                                                Hiển thị
+
+                                            </span>
+
+                                        <% } else { %>
+
+                                            <span
+                                                class="badge bg-red">
+
+                                                Đã ẩn
+
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+                                    <!-- CREATED -->
+
+                                    <td>
+
+                                        <%= new Date(
+                                            r.createdAt
+                                        ).toLocaleString(
+                                            'vi-VN'
+                                        ) %>
+
+                                    </td>
+
+                                    <!-- ACTION -->
+
+                                    <td>
+
+                                        <a
+
+                                            href="/review/detail/<%= r._id %>"
+
+                                            class="btn btn-info btn-sm">
+
+                                            Chi tiết
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- PAGINATION -->
+
+<div class="row clearfix">
+
+    <% if(pages > 0) { %>
+
+        <ul class="pagination mx-auto">
+
+            <li
+                class="page-item <%= current == 1 ? 'disabled' : '' %>">
+
+                <a
+
+                    class="page-link"
+
+                    href="/review?page=1&keyword=<%= keyword || '' %>">
+
+                    First
+
+                </a>
+
+            </li>
+
+            <% for(let i=1;i<=pages;i++){ %>
+
+                <li
+                    class="page-item <%= current == i ? 'active' : '' %>">
+
+                    <a
+
+                        class="page-link"
+
+                        href="/review?page=<%= i %>&keyword=<%= keyword || '' %>">
+
+                        <%= i %>
+
+                    </a>
+
+                </li>
+
+            <% } %>
+
+            <li
+                class="page-item <%= current == pages ? 'disabled' : '' %>">
+
+                <a
+
+                    class="page-link"
+
+                    href="/review?page=<%= pages %>&keyword=<%= keyword || '' %>">
+
+                    Last
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    <% } %>
+
+</div>
+
+<script>
+
+function searchReview(){
+
+    const keyword =
+
+        document.getElementById(
+            'keyword'
+        ).value;
+
+    window.location.href =
+
+        `/review?keyword=${encodeURIComponent(keyword)}`;
+
+}
+
+</script>

@@ -1,0 +1,615 @@
+/* ============================================
+   🎨 ADMIN UI - MODERN & BEAUTIFUL REDESIGN
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* ============================================
+   TOPBAR - Modern Header
+   ============================================ */
+
+.navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    padding: 16px 24px !important;
+    border-bottom: none;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+}
+
+.navbar-header {
+    margin: 0 !important;
+}
+
+.nav.navbar-nav.navbar-right li a {
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.nav.navbar-nav.navbar-right li a:hover {
+    transform: scale(1.1);
+}
+
+/* ============================================
+   SIDEBAR - Modern & Clean
+   ============================================ */
+
+#leftsidebar {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    width: 260px !important;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#leftsidebar .user-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px !important;
+}
+
+#leftsidebar .user-info .image img {
+    border-radius: 50%;
+    border: 3px solid #667eea;
+}
+
+#leftsidebar .user-info .name {
+    color: white;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+#leftsidebar .user-info .email {
+    color: #a0aec0;
+    font-size: 12px;
+}
+
+/* Menu */
+#leftsidebar .menu {
+    padding: 20px 0 !important;
+}
+
+#leftsidebar .menu .list > li.header {
+    color: #a0aec0;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 20px;
+    margin-top: 20px;
+}
+
+#leftsidebar .menu .list > li > a {
+    color: #cbd5e0;
+    padding: 12px 20px !important;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    font-weight: 500;
+}
+
+#leftsidebar .menu .list > li > a:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    padding-left: 24px !important;
+}
+
+#leftsidebar .menu .list > li.active > a {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.15);
+    border-left: 4px solid #667eea;
+    padding-left: 20px !important;
+}
+
+#leftsidebar .menu .list > li > a .material-icons {
+    font-size: 20px;
+}
+
+/* Submenu */
+#leftsidebar .menu .ml-menu {
+    display: none;
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid #667eea;
+}
+
+#leftsidebar .menu .list > li.active > .ml-menu {
+    display: block !important;
+}
+
+#leftsidebar .menu .ml-menu > li > a {
+    color: #a0aec0;
+    padding: 10px 20px 10px 50px !important;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+#leftsidebar .menu .ml-menu > li > a:hover {
+    color: #667eea;
+    padding-left: 56px !important;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+
+.content {
+    margin-left: 260px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+    min-height: 100vh;
+    padding: 24px !important;
+}
+
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   CARDS - Beautiful Design
+   ============================================ */
+
+.card {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s ease !important;
+    background: white !important;
+}
+
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-2px);
+}
+
+.card .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px !important;
+    border-radius: 12px 12px 0 0 !important;
+    border: none !important;
+}
+
+.card .header h2 {
+    margin: 0 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card .body {
+    padding: 24px !important;
+}
+
+/* ============================================
+   TABLES - Modern & Clean
+   ============================================ */
+
+.table {
+    margin-bottom: 0 !important;
+}
+
+.table thead {
+    background: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+}
+
+.table thead th {
+    color: #374151;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e5e7eb !important;
+    padding: 16px !important;
+    background: none;
+}
+
+.table tbody td {
+    padding: 16px !important;
+    color: #6b7280;
+    border-bottom: 1px solid #f0f0f0 !important;
+    vertical-align: middle !important;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: #f9fafb;
+    box-shadow: inset 2px 0 0 #667eea;
+}
+
+/* ============================================
+   BADGES - Status Indicators
+   ============================================ */
+
+.badge {
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-primary {
+    background: rgba(102, 126, 234, 0.1) !important;
+    color: #667eea !important;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+}
+
+.badge-warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+}
+
+.badge-info {
+    background: rgba(14, 165, 233, 0.1) !important;
+    color: #0ea5e9 !important;
+}
+
+/* ============================================
+   BUTTONS - Modern & Interactive
+   ============================================ */
+
+.btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 10px 16px !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn--primary,
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+
+.btn--primary:hover,
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: white !important;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+    color: white !important;
+}
+
+.btn-secondary,
+.btn-default {
+    background: #e5e7eb !important;
+    color: #374151 !important;
+}
+
+.btn-secondary:hover,
+.btn-default:hover {
+    background: #d1d5db !important;
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+}
+
+.btn-lg {
+    padding: 14px 24px !important;
+    font-size: 16px !important;
+}
+
+.btn i {
+    font-size: 16px;
+}
+
+/* ============================================
+   FORMS - Beautiful & Usable
+   ============================================ */
+
+.form-control {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    background: white !important;
+}
+
+.form-control:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+    outline: none !important;
+}
+
+.form-control:disabled {
+    background: #f9fafb !important;
+    color: #9ca3af !important;
+}
+
+label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* ============================================
+   ALERTS - Attention Grabbers
+   ============================================ */
+
+.alert {
+    border-radius: 8px !important;
+    border: none !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border-left: 4px solid #10b981;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border-left: 4px solid #ef4444;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+    border-left: 4px solid #f59e0b;
+}
+
+.alert-info {
+    background: rgba(14, 165, 233, 0.1) !important;
+    color: #0ea5e9 !important;
+    border-left: 4px solid #0ea5e9;
+}
+
+/* ============================================
+   STATS BOXES - Dashboard
+   ============================================ */
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card .icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+}
+
+.stat-card .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 6px;
+}
+
+.stat-card .label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ============================================
+   MODAL - Beautiful Popups
+   ============================================ */
+
+.modal-content {
+    border-radius: 12px !important;
+    border: none !important;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.modal-header .close {
+    color: white;
+    opacity: 0.8;
+}
+
+.modal-header .close:hover {
+    opacity: 1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+    }
+
+    #leftsidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .content {
+        padding: 16px !important;
+    }
+
+    .card .body {
+        padding: 16px !important;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 12px !important;
+        font-size: 12px !important;
+    }
+
+    .btn {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+    }
+
+    /* Thumbnail size - smaller */
+    .table-thumbnail {
+        width: 40px !important;
+        height: 40px !important;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* ============================================
+   SCROLLBAR - Custom Styling
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+/* ============================================
+   SELECT & DROPDOWN - Fix Overflow
+   ============================================ */
+
+select,
+.form-control,
+.provinces__name,
+.districts__name,
+.order-status-select {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+select:focus,
+.form-control:focus {
+    z-index: 100 !important;
+}
+
+.card {
+    overflow: visible !important;
+}
+
+.card .body {
+    overflow: visible !important;
+}

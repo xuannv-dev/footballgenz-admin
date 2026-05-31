@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html>
 
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Admin Panel</title>
 
@@ -29,29 +30,225 @@
         rel="stylesheet"
         href="/stylesheets/admin.css">
 
-    <link
-        rel="stylesheet"
-        href="/stylesheets/style.css">
-
     <!-- ================= ICON ================= -->
 
     <link
         href="https://fonts.googleapis.com/icon?family=Material+Icons"
         rel="stylesheet">
 
-    <!-- ================= SUMMERNOTE ================= -->
+    <!-- Modern Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- ================= SUMMERNOTE ================= -->
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.css">
+    <!-- <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.css" integrity="sha256-S97D6f7T3zO92fL9R/fRls96L0T0mX7P+p9p6+rM37Y=" crossorigin="anonymous"> -->
 
     <!-- ================= CHART ================= -->
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5; /* Indigo-600 */
+            --primary-hover: #4338ca;
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #64748b;
+            --sidebar-active: #4f46e5;
+            --sidebar-active-bg: #f5f3ff;
+            --body-bg: #f8fafc;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif !important;
+            background-color: var(--body-bg) !important;
+            color: #1e293b;
+        }
+
+        /* Custom Scrollbar cho hiện đại */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Style chung cho Buttons để dùng ở cả Login và Dashboard */
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Style cho Inputs */
+        .form-control {
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 10px 15px !important;
+            transition: all 0.2s !important;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
+        }
+
+        .navbar {
+            background-color: #ffffff !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+            border: none !important;
+        }
+
+        .navbar .navbar-nav > li > a i {
+            color: #64748b !important;
+        }
+        .navbar .navbar-nav > li > a:hover i {
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-bg) !important;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: none !important;
+        }
+
+        .sidebar .menu .list a {
+            color: var(--sidebar-text) !important;
+            border-radius: 8px;
+            margin: 4px 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .menu .list li.header {
+            background: transparent !important;
+            color: #94a3b8 !important;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar .menu .list li.active > a,
+        .sidebar .menu .list a:hover {
+            background-color: var(--sidebar-active-bg) !important;
+            color: var(--sidebar-active) !important;
+        }
+
+        .sidebar .menu .list a i {
+            font-size: 20px !important;
+            margin-top: -2px;
+            color: inherit !important;
+        }
+
+        .sidebar .user-info {
+            background: none !important;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 20px 15px !important;
+            height: auto !important;
+        }
+
+        .sidebar .user-info .name {
+            color: #1e293b !important;
+            font-weight: 600;
+        }
+
+        .sidebar .user-info .email {
+            color: #64748b !important;
+        }
+
+        .content {
+            margin-top: 80px !important;
+            background-color: var(--body-bg);
+        }
+
+        /* Thổi hồn vào các Card chứa nội dung */
+        .card {
+            border-radius: var(--radius) !important;
+            border: none !important;
+            box-shadow: var(--card-shadow) !important;
+            transition: transform 0.2s;
+        }
+
+        /* Auth Page Wrapper (sẽ dùng cho trang login) */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top right, #eef2ff, #f8fafc);
+        }
+
+        /* DASHBOARD STAT CARDS */
+        .stat-card {
+            border-radius: var(--radius);
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-card .icon {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 80px !important;
+            opacity: 0.2;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        .stat-card .label {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .bg-gradient-indigo { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
+        .bg-gradient-emerald { background: linear-gradient(135deg, #10b981 0%, #047857 100%); }
+        .bg-gradient-amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .bg-gradient-rose { background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); }
+
+        /* CHART WRAPPER */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            margin-bottom: 24px;
+        }
+    </style>
 
 </head>
 
-<body class="theme-red">
+<body class="theme-indigo">
 
 <!-- ================= TOPBAR ================= -->
 
@@ -273,7 +470,22 @@
                     </a>
 
                 </li>
+                <!-- REVIEW -->
+                <li>
 
+                    <a href="/review">
+
+                        <i class="material-icons">
+                            reviews
+                        </i>
+
+                        <span>
+                            Quản lý đánh giá
+                        </span>
+
+                    </a>
+
+                </li>
                 <!-- NEWS -->
                 <li>
 
@@ -392,13 +604,21 @@
 
 <script src="/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
 
+<!-- <script src="/js/admin-helpers.js"></script> -->
+
 <script src="/js/admin.js"></script>
 
 <script src="/js/demo.js"></script>
 
 <!-- ================= SUMMERNOTE ================= -->
-
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.js" integrity="sha256-4mYvYpL0f7y6YmB9f5p8N6X6F7L6R6V6X6F7L6R6V6=" crossorigin="anonymous"></script> -->
+
+<!-- ================= CHART ================= -->
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js" integrity="sha256-07r59qSghMvl0iT/9oB/u5u0+jC2F4t/vS6Lq8V/G7M=" crossorigin="anonymous"></script> -->
 
 </body>
 

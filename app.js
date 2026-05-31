@@ -24,6 +24,7 @@ var orderRouter= require('./routes/order');
 var adminUserRouter = require('./routes/admin-user');
 var newsRouter = require('./routes/news');
 var returnRouter = require('./routes/returnRequest');
+var reviewRouter = require('./routes/review');
 
 var authMiddleware = require('./middleware/auth');
 
@@ -97,6 +98,7 @@ app.use('/order', authMiddleware.isAdmin, orderRouter);
 app.use('/admin-user', authMiddleware.isAdmin, adminUserRouter);
 app.use('/news', authMiddleware.isAdmin, newsRouter);
 app.use('/return', authMiddleware.isAdmin, returnRouter);
+app.use('/review', authMiddleware.isAdmin, reviewRouter);
 
 // USER (nếu cần giữ)
 app.use('/user', authMiddleware.enforceAuthentication, userRouter);

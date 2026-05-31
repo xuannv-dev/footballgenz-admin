@@ -100,30 +100,44 @@
                         Thumbnail
                     </label>
 
-                    <input
+                    <div style="margin-bottom:15px;">
 
-                        type="file"
+                            <img
+                                id="preview"
+                                src="<%= news.thumbnail || '/images/no-image.jpg' %>"
+                                width="180"
+                                style="
+                                    border-radius:8px;
+                                    border:1px solid #ddd;
+                                "
+                            >
 
-                        id="thumbnailFile"
+                        </div>
 
-                        class="form-control"
-                    >
+                        <input
+                            type="hidden"
+                            id="thumbnail"
+                            value="<%= news.thumbnail %>"
+                        >
 
-                    <br>
+                        <div class="form-line">
 
-                    <img
+                            <input
+                                type="file"
+                                id="thumbnailFile"
+                                accept="image/*"
+                            >
 
-                        id="preview"
+                        </div>
 
-                        src="<%= news.thumbnail || '/images/no-image.jpg' %>"
-
-                        width="180"
-
-                        style="
-                            border-radius:8px;
-                            border:1px solid #ddd;
-                        "
-                    >
+                        <button
+                            type="button"
+                            class="btn btn-info"
+                            id="btnUploadThumbnail"
+                            style="margin-top:10px;"
+                        >
+                            📤 Upload ảnh
+                        </button>
 
                 </div>
 
@@ -230,68 +244,110 @@ window.addEventListener('load', function(){
 
     // ================= UPLOAD THUMBNAIL =================
 
-    $('#thumbnailFile').change(async function(){
+    document
+        .getElementById('btnUploadThumbnail')
+        .addEventListener(
+            'click',
+            async function(){
 
-        const file =
-            this.files[0];
+                const file =
+                    document
+                    .getElementById(
+                        'thumbnailFile'
+                    )
+                    .files[0];
 
-        if(!file){
+                if(!file){
 
-            return;
+                    alert(
+                        'Vui lòng chọn ảnh'
+                    );
 
-        }
+                    return;
 
-        const formData =
-            new FormData();
+                }
 
-        formData.append(
-            'file',
-            file
+                if(
+                    file.size >
+                    10 * 1024 * 1024
+                ){
+
+                    alert(
+                        'Ảnh vượt quá 10MB'
+                    );
+
+                    return;
+
+                }
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    'file',
+                    file
+                );
+
+                formData.append(
+                    'group',
+                    'news'
+                );
+
+                try{
+
+                    const response =
+                        await fetch(
+                            '/upload',
+                            {
+                                method:'POST',
+                                body:formData
+                            }
+                        );
+
+                    if(!response.ok){
+
+                        const text =
+                            await response.text();
+
+                        throw new Error(text);
+
+                    }
+
+                    const imageUrl =
+                        await response.text();
+
+                    thumbnailUrl =
+                        imageUrl;
+
+                    document
+                    .getElementById(
+                        'thumbnail'
+                    ).value =
+                        imageUrl;
+
+                    document
+                    .getElementById(
+                        'preview'
+                    ).src =
+                        imageUrl;
+
+                    alert(
+                        'Upload ảnh thành công'
+                    );
+
+                }
+                catch(error){
+
+                    console.log(error);
+
+                    alert(
+                        'Upload ảnh thất bại'
+                    );
+
+                }
+
+            }
         );
-
-        formData.append(
-            'group',
-            'news'
-        );
-
-        try{
-
-            const response =
-                await fetch('/upload', {
-
-                    method: 'POST',
-
-                    body: formData
-
-                });
-
-            const result =
-                await response.text();
-
-            thumbnailUrl =
-                result;
-
-            $('#preview').attr(
-                'src',
-                result
-            );
-
-            alert(
-                'Upload thumbnail thành công'
-            );
-
-        }
-        catch(err){
-
-            console.log(err);
-
-            alert(
-                'Upload thumbnail thất bại'
-            );
-
-        }
-
-    });
 
     // ================= UPDATE NEWS =================
 

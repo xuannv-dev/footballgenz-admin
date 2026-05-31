@@ -1,171 +1,195 @@
 <div class="card">
 
-    <div class="header">
+    <!-- <div class="header">
         <h2>📁 CHI TIẾT DANH MỤC</h2>
-    </div>
+        <a href="/category" class="btn btn-secondary">← Quay lại</a>
+    </div> -->
 
     <div class="body">
 
         <!-- NAME -->
         <div class="form-group">
-            <label>Tên danh mục</label>
+            <label>Tên danh mục *</label>
 
             <div class="form-line">
-                <input 
+                <input
                     type="text"
                     id="group"
                     class="form-control"
                     value="<%= category.group %>"
+                    required
                 >
             </div>
         </div>
 
         <!-- TYPE -->
         <div class="form-group">
-            <label>Loại</label>
+            <label>Loại (nhập từng loại, cách bằng dấu phẩy) *</label>
 
             <div class="form-line">
-                <input 
+                <input
                     type="text"
                     id="type"
                     class="form-control"
-                    value="<%= category.type %>"
+                    value="<%= Array.isArray(category.type) ? category.type.join(', ') : category.type %>"
+                    placeholder="VD: Giày đá bóng, Giày futsal, Giày đào tạo"
+                    required
                 >
             </div>
+            <small class="form-text text-muted">Nhập các loại cách nhau bằng dấu phẩy</small>
         </div>
 
         <!-- STATUS -->
         <div class="form-group">
             <label>Trạng thái</label>
 
-            <select id="isActive" class="form-control order-status-select">
-
-                <option value="true"
-                    <%= category.isActive == true ? 'selected' : '' %>>
+            <select id="isActive" class="form-control">
+                <option value="true" <%= category.isActive == true ? 'selected' : '' %>>
                     Hoạt động
                 </option>
-
-                <option value="false"
-                    <%= category.isActive == false ? 'selected' : '' %>>
+                <option value="false" <%= category.isActive == false ? 'selected' : '' %>>
                     Tạm khóa
                 </option>
-
             </select>
         </div>
 
         <!-- IMAGE -->
         <div class="form-group">
-
             <label>Ảnh danh mục</label>
 
-            <div style="margin-bottom:15px;">
-
-                <img 
+            <div style="margin-bottom: 15px;">
+                <img
                     id="previewImage"
                     src="<%= category.image || '/images/no-image.jpg' %>"
-                    class="table-thumbnail"
-                    style="width:120px;height:120px;"
+                    style="width: 120px; height: 120px; border-radius: 8px; border: 1px solid #e5e7eb;"
                 >
-
             </div>
 
             <input type="hidden" id="image" value="<%= category.image %>">
 
-            <input type="file" id="fileUpload">
+            <div class="form-line">
+                <input type="file" id="fileUpload" accept="image/*">
+            </div>
 
-            <button 
+            <button
                 type="button"
                 class="btn btn-info"
                 id="btnUpload"
-                style="margin-top:10px;"
+                style="margin-top: 10px;"
             >
-                Upload ảnh
+                📤 Upload ảnh
             </button>
-
         </div>
 
-        <!-- BUTTON -->
-        <button 
-            class="btn btn-primary"
-            onclick="updateCategory()"
-        >
-            Cập nhật danh mục
-        </button>
+        <!-- BUTTONS -->
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <button
+                class="btn btn-primary"
+                onclick="updateCategory()"
+            >
+                ✅ Cập nhật danh mục
+            </button>
+            <a href="/category" class="btn btn-secondary">
+                Quay lại
+            </a>
+        </div>
 
     </div>
 
 </div>
 
 <script>
+// Upload image
+document.getElementById('btnUpload').addEventListener('click', async function() {
+    const file = document.getElementById('fileUpload').files[0];
 
-$("#btnUpload").click(function(){
-
-    let formData = new FormData();
-
-    let file = $('#fileUpload')[0].files[0];
-
-    if(!file){
+    if (!file) {
         alert("Vui lòng chọn ảnh");
         return;
     }
 
+    const formData = new FormData();
     formData.append("file", file);
 
-    $.ajax({
-        url: "/upload",
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
+    try {
+        const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        });
 
-        success: function(response){
-
-            $('#image').val(response);
-
-            $('#previewImage').attr('src', response);
-
-            alert("Upload thành công!");
-        },
-
-        error: function(){
-            alert("Upload thất bại!");
+        if (!response.ok) {
+            throw new Error('Upload failed');
         }
-    });
 
+        const imageUrl = await response.text();
+        document.getElementById('image').value = imageUrl;
+        document.getElementById('previewImage').src = imageUrl;
+        document.getElementById('fileUpload').value = '';
+
+        alert("✅ Upload ảnh thành công!");
+    } catch (error) {
+        console.error('Error:', error);
+        alert("❌ Upload ảnh thất bại!");
+    }
 });
 
-function updateCategory(){
+// Update category
+async function updateCategory() {
+    const group = document.getElementById('group').value.trim();
+    const typeStr = document.getElementById('type').value.trim();
+    const image = document.getElementById('image').value;
+    const isActive = document.getElementById('isActive').value === 'true';
 
-    $.ajax({
+    if (!group) {
+        alert("Tên danh mục không được để trống!");
+        return;
+    }
 
-        url: "/category/update/<%= category._id %>",
-        type: "PUT",
+    if (!typeStr) {
+        alert("Loại không được để trống!");
+        return;
+    }
 
-        contentType: "application/json",
+    // Convert comma-separated string to array
+    const type = typeStr.split(',').map(t => t.trim()).filter(t => t);
 
-        data: JSON.stringify({
+    if (type.length === 0) {
+        alert("Loại không được để trống!");
+        return;
+    }
 
-            group: $('#group').val(),
+    try {
+        const response = await fetch("/category/update/<%= category._id %>", {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                group,
+                type,
+                image,
+                isActive
+            })
+        });
 
-            type: $('#type').val(),
-
-            image: $('#image').val(),
-
-            isActive: $('#isActive').val()
-
-        }),
-
-        success: function(){
-            alert("Cập nhật thành công!");
-            location.reload();
-        },
-
-        error: function(){
-            alert("Cập nhật thất bại!");
+        if (!response.ok) {
+            throw new Error('Update failed');
         }
 
-    });
-
+        alert("✅ Cập nhật danh mục thành công!");
+        window.location.href = '/category';
+    } catch (error) {
+        console.error('Error:', error);
+        alert("❌ Cập nhật thất bại!");
+    }
 }
 
+// Handle Enter key in inputs
+document.getElementById('group').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') updateCategory();
+});
+
+document.getElementById('type').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') updateCategory();
+});
 </script>

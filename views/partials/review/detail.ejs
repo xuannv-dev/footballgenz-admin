@@ -1,0 +1,339 @@
+<div class="row clearfix">
+
+    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+
+        <div class="card">
+
+            <!-- HEADER -->
+
+            <div class="header">
+
+                <h2>
+                    ⭐ CHI TIẾT ĐÁNH GIÁ SẢN PHẨM
+                </h2>
+
+            </div>
+
+            <!-- BODY -->
+
+            <div class="body">
+
+                <!-- ORDER CODE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Mã đơn hàng
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= review.orderCode %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- CUSTOMER -->
+
+                <div class="form-group">
+
+                    <label>
+                        Khách hàng
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= review.customerName %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- PRODUCT -->
+
+                <div class="form-group">
+
+                    <label>
+                        Sản phẩm
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= review.productname %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- IMAGE -->
+
+                <% if(review.image){ %>
+
+                    <div class="form-group">
+
+                        <label>
+                            Hình ảnh sản phẩm
+                        </label>
+
+                        <div>
+
+                            <img
+
+                                src="<%= review.image %>"
+
+                                style="
+                                    width:120px;
+                                    border-radius:8px;
+                                    border:1px solid #ddd;
+                                "
+                            >
+
+                        </div>
+
+                    </div>
+
+                <% } %>
+
+                <!-- SIZE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Size
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= review.size || '' %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- COLOR -->
+
+                <div class="form-group">
+
+                    <label>
+                        Màu sắc
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= review.color || '' %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- RATING -->
+
+                <div class="form-group">
+
+                    <label>
+                        Đánh giá
+                    </label>
+
+                    <div
+                        style="
+                            margin-top:10px;
+                            font-size:24px;
+                        ">
+
+                        <% for(let i=1;i<=5;i++){ %>
+
+                            <% if(i <= review.rating){ %>
+
+                                <span
+                                    style="
+                                        color:#ff9800;
+                                    ">
+                                    ★
+                                </span>
+
+                            <% } else { %>
+
+                                <span
+                                    style="
+                                        color:#ddd;
+                                    ">
+                                    ★
+                                </span>
+
+                            <% } %>
+
+                        <% } %>
+
+                        <span
+                            style="
+                                margin-left:10px;
+                                font-size:14px;
+                                color:#666;
+                            ">
+
+                            (<%= review.rating %>/5)
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- COMMENT -->
+
+                <div class="form-group">
+
+                    <label>
+                        Nội dung đánh giá
+                    </label>
+
+                    <textarea
+
+                        class="form-control"
+
+                        rows="5"
+
+                        readonly><%= review.comment %></textarea>
+
+                </div>
+
+                <!-- CREATED -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ngày đánh giá
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        class="form-control"
+
+                        value="<%= new Date(review.createdAt).toLocaleString('vi-VN') %>"
+
+                        readonly
+                    >
+
+                </div>
+
+                <!-- FORM UPDATE -->
+
+                <form
+                    action="/review/update/<%= review._id %>"
+                    method="POST">
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Trạng thái hiển thị
+                        </label>
+
+                        <select
+
+                            name="isActive"
+
+                            class="form-control">
+
+                            <option
+
+                                value="true"
+
+                                <%= review.isActive ? 'selected' : '' %>>
+
+                                Hiển thị
+
+                            </option>
+
+                            <option
+
+                                value="false"
+
+                                <%= !review.isActive ? 'selected' : '' %>>
+
+                                Ẩn đánh giá
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ADMIN NOTE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Ghi chú Admin
+                        </label>
+
+                        <textarea
+
+                            name="adminNote"
+
+                            class="form-control"
+
+                            rows="4"><%= review.adminNote || '' %></textarea>
+
+                    </div>
+
+                    <!-- BUTTON -->
+
+                    <button
+
+                        type="submit"
+
+                        class="btn btn-success">
+
+                        Lưu thay đổi
+
+                    </button>
+
+                    <a
+
+                        href="/review"
+
+                        class="btn btn-default">
+
+                        Quay lại
+
+                    </a>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -450,14 +450,18 @@ router.get('/stats', async function(req, res) {
         const rawData = await Order.aggregate([
             {
                 $match: {
-                    status: 4,
+                    // Đảm bảo lấy các đơn hàng đã hoàn thành (thường là 4 hoặc ORDER_STATUS.DELIVERED)
+                    status: { $in: [4, "4"] }, 
                     createdAt: { $gte: from, $lte: to }
                 }
             },
             {
+                $addFields: { totalpriceNum: { $toDouble: "$totalprice" } }
+            },
+            {
                 $group: {
                     _id: groupBy,
-                    revenue:    { $sum: '$totalprice' },
+                    revenue:    { $sum: '$totalpriceNum' },
                     orderCount: { $sum: 1 }
                 }
             },
