@@ -477,6 +477,10 @@ function searchProduct(){
             new URLSearchParams()
         );
 
+    if(!params){
+        return;
+    }
+
     // ================= KEYWORD =================
 
     if(keyword){

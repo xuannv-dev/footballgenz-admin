@@ -622,6 +622,11 @@ router.post('/payment/confirm/:orderCode', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Đơn hàng này không dùng chuyển khoản' });
         }
 
+        // Kiểm tra tránh xác nhận cho đơn đã bị hủy do quá hạn
+        if (order.status === ORDER_STATUS.CANCELLED) {
+            return res.status(400).json({ success: false, message: 'Không thể xác nhận thanh toán cho đơn hàng đã bị hủy.' });
+        }
+
         // Update payment status
         order.paymentStatus = PAYMENT_STATUS.CONFIRMED;
         order.paymentConfirmedAt = new Date();

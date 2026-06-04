@@ -1,23 +1,116 @@
 <input
-    type="date"
+    type="text"
     id="fromDate"
     name="fromDate"
     value="<%= typeof fromDate !== 'undefined' ? fromDate : '' %>"
     class="form-control admin-filter-field admin-filter-field--date"
+    placeholder="Từ ngày"
+    inputmode="numeric"
+    pattern="\d{2}/\d{2}/\d{4}"
     style="width:160px;"
 >
 
 <input
-    type="date"
+    type="text"
     id="toDate"
     name="toDate"
     value="<%= typeof toDate !== 'undefined' ? toDate : '' %>"
     class="form-control admin-filter-field admin-filter-field--date"
+    placeholder="Đến ngày"
+    inputmode="numeric"
+    pattern="\d{2}/\d{2}/\d{4}"
     style="width:160px;"
 >
 
 <script>
+function normalizeAdminDisplayDate(value){
+    const cleaned =
+        value
+            .replace(/[^\d]/g, '')
+            .slice(0, 8);
+
+    if(cleaned.length <= 2){
+        return cleaned;
+    }
+
+    if(cleaned.length <= 4){
+        return `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    }
+
+    return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}/${cleaned.slice(4)}`;
+}
+
+function isAdminDisplayDate(value){
+    return /^\d{2}\/\d{2}\/\d{4}$/.test(value);
+}
+
+function parseAdminDisplayDate(value){
+    if(!isAdminDisplayDate(value)){
+        return null;
+    }
+
+    const parts = value.split('/');
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+    const date = new Date(year, month - 1, day);
+
+    if(
+        date.getFullYear() !== year
+        ||
+        date.getMonth() + 1 !== month
+        ||
+        date.getDate() !== day
+    ){
+        return null;
+    }
+
+    return date;
+}
+
+function validateAdminDateRange(){
+    const fromDateInput =
+        document.getElementById('fromDate');
+
+    const toDateInput =
+        document.getElementById('toDate');
+
+    if(!fromDateInput || !toDateInput){
+        return true;
+    }
+
+    const fromDate =
+        parseAdminDisplayDate(fromDateInput.value);
+
+    const toDate =
+        parseAdminDisplayDate(toDateInput.value);
+
+    if(fromDateInput.value && !fromDate){
+        alert('Ngày bắt đầu phải đúng định dạng dd/mm/yyyy');
+        fromDateInput.focus();
+        return false;
+    }
+
+    if(toDateInput.value && !toDate){
+        alert('Ngày kết thúc phải đúng định dạng dd/mm/yyyy');
+        toDateInput.focus();
+        return false;
+    }
+
+    if(fromDate && toDate && fromDate.getTime() > toDate.getTime()){
+        alert('Từ ngày phải nhỏ hơn hoặc bằng đến ngày');
+        fromDateInput.focus();
+        return false;
+    }
+
+    return true;
+}
+
 function appendAdminDateParams(params){
+    if(!validateAdminDateRange()){
+        return null;
+    }
+
     const fromDateInput =
         document.getElementById('fromDate');
 
@@ -25,13 +118,43 @@ function appendAdminDateParams(params){
         document.getElementById('toDate');
 
     if(fromDateInput && fromDateInput.value){
-        params.set('fromDate', fromDateInput.value);
+        params.set('fromDate', fromDateInput.value.trim());
     }
 
     if(toDateInput && toDateInput.value){
-        params.set('toDate', toDateInput.value);
+        params.set('toDate', toDateInput.value.trim());
     }
 
     return params;
+}
+
+document
+    .querySelectorAll('#fromDate, #toDate')
+    .forEach(input => {
+        input.addEventListener('input', function(){
+            this.value =
+                normalizeAdminDisplayDate(this.value);
+        });
+
+        input.addEventListener('blur', function(){
+            if(this.value && !isAdminDisplayDate(this.value)){
+                this.value = '';
+            }
+        });
+    });
+
+const adminDateForm =
+    document.getElementById('fromDate')
+    &&
+    document.getElementById('fromDate').closest('form');
+
+if(adminDateForm && !adminDateForm.dataset.dateFilterBound){
+    adminDateForm.dataset.dateFilterBound = 'true';
+
+    adminDateForm.addEventListener('submit', function(event){
+        if(!validateAdminDateRange()){
+            event.preventDefault();
+        }
+    });
 }
 </script>

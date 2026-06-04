@@ -339,6 +339,10 @@ function searchReview(){
             new URLSearchParams()
         );
 
+    if(!params){
+        return;
+    }
+
     if(keyword){
         params.set('keyword', keyword);
     }
