@@ -48,6 +48,8 @@ const activeMap = {
                 style="width:250px;"
             >
 
+            <%- include('../shared/date-filter', { fromDate, toDate }) %>
+
             <button class="btn btn-primary">
 
                 Tìm
@@ -196,7 +198,7 @@ const activeMap = {
 
                 <a
                     class="page-link"
-                    href="/category?page=1&keyword=<%= keyword || '' %>">
+                    href="/category?page=1<%= queryString ? '&' + queryString : '' %>">
 
                     First
 
@@ -213,7 +215,7 @@ const activeMap = {
 
                     <a
                         class="page-link"
-                        href="/category?page=<%= i %>&keyword=<%= keyword || '' %>">
+                        href="/category?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 
@@ -230,7 +232,7 @@ const activeMap = {
 
                 <a
                     class="page-link"
-                    href="/category?page=<%= pages %>&keyword=<%= keyword || '' %>">
+                    href="/category?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
 
                     Last
 

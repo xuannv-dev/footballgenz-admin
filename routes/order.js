@@ -7,6 +7,11 @@ const Product = require('../models/product');
 const { ORDER_STATUS, PAYMENT_STATUS } =
     require('../models/order');
 
+const {
+    applyDateRangeFilter,
+    buildQueryString
+} = require('../utils/adminDateFilter');
+
 /* =====================================================
     ORDER STATUS FLOW
 ===================================================== */
@@ -85,6 +90,26 @@ router.get('/', async function(req, res, next) {
 
         }
 
+        const dateFilter =
+            applyDateRangeFilter(query, req.query);
+
+        const queryString =
+            buildQueryString(req.query, {
+                page: undefined
+            });
+
+        const buildListUrl = overrides => {
+            const params =
+                buildQueryString(req.query, {
+                    page: undefined,
+                    ...overrides
+                });
+
+            return params
+                ? `/order?${params}`
+                : '/order';
+        };
+
         // ================= GET DATA =================
 
         const orders =
@@ -125,7 +150,17 @@ router.get('/', async function(req, res, next) {
                     status,
 
                 searchCode:
-                    code
+                    code,
+
+                fromDate:
+                    dateFilter.fromDate,
+
+                toDate:
+                    dateFilter.toDate,
+
+                queryString,
+
+                buildListUrl
 
             }
         );
@@ -540,18 +575,19 @@ router.get('/payment/pending', async (req, res) => {
         const pageSize = 10;
         const skip = (page - 1) * pageSize;
 
-        const orders = await Order.find({
+        const query = {
             typePay: 1,
             paymentStatus: { $in: [PAYMENT_STATUS.AWAITING, PAYMENT_STATUS.VERIFIED] }
-        })
+        };
+
+        applyDateRangeFilter(query, req.query);
+
+        const orders = await Order.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(pageSize);
 
-        const total = await Order.countDocuments({
-            typePay: 1,
-            paymentStatus: { $in: [PAYMENT_STATUS.AWAITING, PAYMENT_STATUS.VERIFIED] }
-        });
+        const total = await Order.countDocuments(query);
 
         res.json({
             success: true,

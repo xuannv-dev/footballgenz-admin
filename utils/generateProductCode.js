@@ -16,9 +16,15 @@ async function generateProductCode(group, brand) {
             groupPrefix = 'PK';
             break;
 
-        case 'QUANAO':
-            groupPrefix = 'AO';
+        case 'AOCLB':
+            groupPrefix = 'AOCLB';
             break;
+        case 'AOQG':
+            groupPrefix = 'AOQG';
+            break;
+        case 'AOTRAINING':
+            groupPrefix = 'AOTRAINING';
+            break;        
 
     }
 
@@ -48,19 +54,36 @@ async function generateProductCode(group, brand) {
 
     // ================= COUNT =================
 
-    const count =
-        await Product.countDocuments({
+    const products =
+        await Product.find({
             group,
             brand
-        });
+        })
+        .select('productCode');
 
-    const number =
-        String(count + 1)
-            .padStart(3, '0');
+    let maxNumber = 0;
 
-    // ================= RESULT =================
+    products.forEach(p => {
 
-    return `${groupPrefix}-${brandPrefix}-${number}`;
+        const parts =
+            p.productCode.split('-');
+
+        const current =
+            parseInt(parts[2]);
+
+        if(current > maxNumber){
+
+            maxNumber = current;
+
+        }
+
+    });
+
+    const nextNumber =
+        String(maxNumber + 1)
+            .padStart(3,'0');
+
+    return `${groupPrefix}-${brandPrefix}-${nextNumber}`;
 
 }
 

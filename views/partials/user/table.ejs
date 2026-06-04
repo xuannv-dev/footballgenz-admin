@@ -45,6 +45,8 @@ const formatDate = (date) => {
                     value="<%= role %>">
             <% } %>
 
+            <%- include('../shared/date-filter', { fromDate, toDate }) %>
+
             <button class="btn btn-primary">
                 Tìm
             </button>
@@ -53,7 +55,7 @@ const formatDate = (date) => {
 
         <!-- FILTER ROLE -->
         <a
-            href="/admin-user"
+            href="<%= buildListUrl({ role: undefined }) %>"
             class="btn <%= !role ? 'btn-primary' : 'btn-default' %>">
 
             Tất cả
@@ -61,7 +63,7 @@ const formatDate = (date) => {
         </a>
 
         <a
-            href="/admin-user?role=USER"
+            href="<%= buildListUrl({ role: 'USER' }) %>"
             class="btn <%= role == 'USER' ? 'btn-primary' : 'btn-default' %>">
 
             USER
@@ -69,7 +71,7 @@ const formatDate = (date) => {
         </a>
 
         <a
-            href="/admin-user?role=ADMIN"
+            href="<%= buildListUrl({ role: 'ADMIN' }) %>"
             class="btn <%= role == 'ADMIN' ? 'btn-primary' : 'btn-default' %>">
 
             ADMIN
@@ -219,9 +221,7 @@ const formatDate = (date) => {
 
                     <a
                         class="page-link"
-                        href="/admin-user?page=<%= i %>
-                        <% if(keyword){ %>&keyword=<%= keyword %><% } %>
-                        <% if(role){ %>&role=<%= role %><% } %>">
+                        href="/admin-user?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 

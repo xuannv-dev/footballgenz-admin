@@ -4,6 +4,11 @@ var router = express.Router();
 const User = require('../models/user');
 const Order = require('../models/order');
 
+const {
+    applyDateRangeFilter,
+    buildQueryString
+} = require('../utils/adminDateFilter');
+
 /* ================= LIST USER ================= */
 router.get('/', async function (req, res, next) {
 
@@ -37,6 +42,26 @@ router.get('/', async function (req, res, next) {
 
         }
 
+        const dateFilter =
+            applyDateRangeFilter(query, req.query);
+
+        const queryString =
+            buildQueryString(req.query, {
+                page: undefined
+            });
+
+        const buildListUrl = overrides => {
+            const params =
+                buildQueryString(req.query, {
+                    page: undefined,
+                    ...overrides
+                });
+
+            return params
+                ? `/admin-user?${params}`
+                : '/admin-user';
+        };
+
         const users = await User.find(query)
             .sort({ createdAt: -1 })
             .skip((page - 1) * pageSize)
@@ -54,7 +79,17 @@ router.get('/', async function (req, res, next) {
 
             keyword,
 
-            role
+            role,
+
+            fromDate:
+                dateFilter.fromDate,
+
+            toDate:
+                dateFilter.toDate,
+
+            queryString,
+
+            buildListUrl
 
         });
 

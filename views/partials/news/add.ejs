@@ -233,19 +233,29 @@ window.addEventListener('load', function(){
                 });
 
             const result =
-                await response.text();
+                await response.json();
 
-            thumbnailUrl =
-                result;
+            if(result.success){
 
-            $('#preview').attr(
-                'src',
-                result
-            );
+                thumbnailUrl =
+                    result.url;
 
-            alert(
-                'Upload thumbnail thành công'
-            );
+                $('#preview').attr(
+                    'src',
+                    result.url
+                );
+
+                alert(
+                    'Upload ảnh thành công'
+                );
+
+            }else{
+
+                alert(
+                    'Upload ảnh thất bại'
+                );
+
+            }
 
         }
         catch(err){

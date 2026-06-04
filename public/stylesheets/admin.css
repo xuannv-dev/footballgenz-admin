@@ -23,3 +23,126 @@
     border-radius: 6px !important;
 
 }
+
+/* ================= SELECT ================= */
+
+select,
+select.form-control,
+.form-select {
+
+    min-height: 42px !important;
+    height: auto !important;
+    line-height: 20px !important;
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+    padding-right: 34px !important;
+    background-color: #fff !important;
+    color: #1f2937 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    vertical-align: middle !important;
+
+}
+
+select option {
+
+    color: #1f2937;
+    background-color: #fff;
+    line-height: 22px;
+    min-height: 28px;
+
+}
+
+/* ================= FILTER BAR ================= */
+
+.admin-filter-bar {
+
+    margin: 15px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+}
+
+.admin-filter-field {
+
+    min-width: 150px;
+    height: 42px !important;
+    margin: 0 !important;
+
+}
+
+.admin-filter-field--keyword {
+
+    width: 240px !important;
+
+}
+
+.admin-filter-field--category {
+
+    width: 180px !important;
+
+}
+
+.admin-filter-field--price {
+
+    width: 140px !important;
+
+}
+
+.admin-filter-field--date {
+
+    width: 160px !important;
+
+}
+
+.admin-filter-bar .btn-main,
+.admin-filter-bar .btn {
+
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    white-space: nowrap;
+
+}
+
+.admin-filter-actions {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: auto;
+
+}
+
+@media (max-width: 768px) {
+
+    .admin-filter-bar {
+
+        align-items: stretch;
+
+    }
+
+    .admin-filter-field,
+    .admin-filter-field--keyword,
+    .admin-filter-field--category,
+    .admin-filter-field--price,
+    .admin-filter-actions,
+    .admin-filter-bar .btn-main,
+    .admin-filter-bar .btn {
+
+        width: 100% !important;
+
+    }
+
+}

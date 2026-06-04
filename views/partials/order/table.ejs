@@ -84,6 +84,8 @@ const statusMap = {
 
             <% } %>
 
+            <%- include('../shared/date-filter', { fromDate, toDate }) %>
+
             <button class="btn btn-primary">
 
                 Tìm
@@ -95,7 +97,7 @@ const statusMap = {
         <!-- FILTER STATUS -->
 
         <a
-            href="/order"
+            href="<%= buildListUrl({ status: undefined }) %>"
             class="btn <%= !selectedStatus ? 'btn-primary' : 'btn-default' %>">
 
             Tất cả
@@ -103,7 +105,7 @@ const statusMap = {
         </a>
 
         <a
-            href="/order?status=1"
+            href="<%= buildListUrl({ status: 1 }) %>"
             class="btn <%= selectedStatus == 1 ? 'btn-primary' : 'btn-default' %>">
 
             Chờ xác nhận
@@ -111,7 +113,7 @@ const statusMap = {
         </a>
 
         <a
-            href="/order?status=2"
+            href="<%= buildListUrl({ status: 2 }) %>"
             class="btn <%= selectedStatus == 2 ? 'btn-primary' : 'btn-default' %>">
 
             Chuẩn bị
@@ -119,7 +121,7 @@ const statusMap = {
         </a>
 
         <a
-            href="/order?status=3"
+            href="<%= buildListUrl({ status: 3 }) %>"
             class="btn <%= selectedStatus == 3 ? 'btn-primary' : 'btn-default' %>">
 
             Đang giao
@@ -127,7 +129,7 @@ const statusMap = {
         </a>
 
         <a
-            href="/order?status=4"
+            href="<%= buildListUrl({ status: 4 }) %>"
             class="btn <%= selectedStatus == 4 ? 'btn-primary' : 'btn-default' %>">
 
             Hoàn thành
@@ -135,7 +137,7 @@ const statusMap = {
         </a>
 
         <a
-            href="/order?status=0"
+            href="<%= buildListUrl({ status: 0 }) %>"
             class="btn <%= selectedStatus == 0 ? 'btn-primary' : 'btn-default' %>">
 
             Đã hủy
@@ -332,7 +334,7 @@ const statusMap = {
 
                 <a
                     class="page-link"
-                    href="/order?page=1&status=<%= selectedStatus || '' %>&code=<%= searchCode || '' %>">
+                    href="/order?page=1<%= queryString ? '&' + queryString : '' %>">
 
                     First
 
@@ -349,7 +351,7 @@ const statusMap = {
 
                     <a
                         class="page-link"
-                        href="/order?page=<%= i %>&status=<%= selectedStatus || '' %>&code=<%= searchCode || '' %>">
+                        href="/order?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 
@@ -366,7 +368,7 @@ const statusMap = {
 
                 <a
                     class="page-link"
-                    href="/order?page=<%= pages %>&status=<%= selectedStatus || '' %>&code=<%= searchCode || '' %>">
+                    href="/order?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
 
                     Last
 

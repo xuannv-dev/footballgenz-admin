@@ -3,6 +3,11 @@ var router = express.Router();
 
 const Category = require('../models/category');
 
+const {
+    applyDateRangeFilter,
+    buildQueryString
+} = require('../utils/adminDateFilter');
+
 /* ================= LIST ================= */
 router.get('/', async function (req, res) {
 
@@ -26,6 +31,14 @@ router.get('/', async function (req, res) {
 
     }
 
+    const dateFilter =
+        applyDateRangeFilter(query, req.query);
+
+    const queryString =
+        buildQueryString(req.query, {
+            page: undefined
+        });
+
     try {
 
         const categories = await Category.find(query)
@@ -44,7 +57,15 @@ router.get('/', async function (req, res) {
 
             pages: Math.ceil(count / pageSize),
 
-            keyword
+            keyword,
+
+            fromDate:
+                dateFilter.fromDate,
+
+            toDate:
+                dateFilter.toDate,
+
+            queryString
 
         });
 

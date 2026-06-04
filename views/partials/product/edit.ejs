@@ -56,19 +56,29 @@
                 </option>
 
                 <option
-                    value="AO"
-                    <%= product.group === 'AO' ? 'selected' : '' %>
+                    value="AOCLB"
+                    <%= product.group === 'AOCLB' ? 'selected' : '' %>
                 >
-                    Áo
+                    Áo CLB
                 </option>
-
+                <option
+                    value="AOQG"
+                    <%= product.group === 'AOQG' ? 'selected' : '' %>
+                >
+                    Áo QG
+                </option>
+                <option
+                    value="AOTRAINING"
+                    <%= product.group === 'AOTRAINING' ? 'selected' : '' %>
+                >
+                    Áo Training
+                </option>
                 <option
                     value="PHUKIEN"
                     <%= product.group === 'PHUKIEN' ? 'selected' : '' %>
                 >
                     Phụ kiện
                 </option>
-
             </select>
         </div>
 
@@ -352,20 +362,20 @@ window.addEventListener('load', function(){
 
             });
 
-            const url = await res.text();
+            const response = await res.json();
 
-            uploadedImages.push(url);
+            uploadedImages.push(response.url);
 
             $('#preview-images').append(`
 
                 <div
                     class="image-item"
-                    data-url="${url}"
+                    data-url="${response.url}"
                     style="position:relative;"
                 >
 
                     <img
-                        src="${url}"
+                        src="${response.url}"
                         width="120"
                         style="
                             border-radius:8px;

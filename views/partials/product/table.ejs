@@ -17,14 +17,7 @@
 
             <!-- ================= FILTER ================= -->
 
-            <div
-                style="
-                    margin:15px;
-                    display:flex;
-                    gap:10px;
-                    flex-wrap:wrap;
-                    align-items:center;
-                ">
+            <div class="admin-filter-bar">
 
                 <!-- KEYWORD -->
 
@@ -38,17 +31,14 @@
 
                     value="<%= keyword || '' %>"
 
-                    class="form-input"
-
-                    style="width:220px;"
+                    class="form-control admin-filter-field admin-filter-field--keyword"
                 >
 
                 <!-- GROUP -->
 
                 <select
                     id="group"
-                    class="form-select"
-                    style="width:180px;">
+                    class="form-control admin-filter-field admin-filter-field--category">
 
                     <option value="">
                         Danh mục
@@ -66,13 +56,13 @@
                     </option>
 
                     <option
-                        value="AO"
-                        <%= group=='AO'
+                        value="AOCLB"
+                        <%= group=='AOCLB'
                             ? 'selected'
                             : ''
                         %>>
 
-                        Áo
+                        Áo CLB
 
                     </option>
 
@@ -90,9 +80,7 @@
 
                     value="<%= minPrice || '' %>"
 
-                    class="form-input"
-
-                    style="width:150px;"
+                    class="form-control admin-filter-field admin-filter-field--price"
                 >
 
                 <!-- MAX PRICE -->
@@ -107,34 +95,38 @@
 
                     value="<%= maxPrice || '' %>"
 
-                    class="form-input"
-
-                    style="width:150px;"
+                    class="form-control admin-filter-field admin-filter-field--price"
                 >
 
-                <!-- SEARCH -->
+                <%- include('../shared/date-filter', { fromDate, toDate }) %>
 
-                <button
-                    class="btn-main"
-                    onclick="searchProduct()">
+                <div class="admin-filter-actions">
 
-                    Tìm
+                    <!-- SEARCH -->
 
-                </button>
+                    <button
+                        class="btn btn-primary"
+                        onclick="searchProduct()">
 
-                <!-- ADD PRODUCT -->
+                        Tìm
 
-                <a
-                    href="/product/add"
-                    class="btn btn-success">
+                    </button>
 
-                    <i class="material-icons">
-                        add
-                    </i>
+                    <!-- ADD PRODUCT -->
 
-                    Thêm sản phẩm
+                    <a
+                        href="/product/add"
+                        class="btn btn-success">
 
-                </a>
+                        <i class="material-icons">
+                            add
+                        </i>
+
+                        Thêm sản phẩm
+
+                    </a>
+
+                </div>
 
             </div>
 
@@ -402,7 +394,7 @@
 
                     class="page-link"
 
-                    href="/product?page=1&keyword=<%= keyword || '' %>&group=<%= group || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>">
+                    href="/product?page=1<%= queryString ? '&' + queryString : '' %>">
 
                     First
 
@@ -421,7 +413,7 @@
 
                         class="page-link"
 
-                        href="/product?page=<%= i %>&keyword=<%= keyword || '' %>&group=<%= group || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>">
+                        href="/product?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 
@@ -440,7 +432,7 @@
 
                     class="page-link"
 
-                    href="/product?page=<%= pages %>&keyword=<%= keyword || '' %>&group=<%= group || '' %>&minPrice=<%= minPrice || '' %>&maxPrice=<%= maxPrice || '' %>">
+                    href="/product?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
 
                     Last
 
@@ -480,18 +472,16 @@ function searchProduct(){
             'maxPrice'
         ).value;
 
-    let url = `/product?`;
+    const params =
+        appendAdminDateParams(
+            new URLSearchParams()
+        );
 
     // ================= KEYWORD =================
 
     if(keyword){
 
-        url +=
-            `keyword=${
-                encodeURIComponent(
-                    keyword
-                )
-            }&`;
+        params.set('keyword', keyword);
 
     }
 
@@ -499,8 +489,7 @@ function searchProduct(){
 
     if(group){
 
-        url +=
-            `group=${group}&`;
+        params.set('group', group);
 
     }
 
@@ -508,8 +497,7 @@ function searchProduct(){
 
     if(minPrice){
 
-        url +=
-            `minPrice=${minPrice}&`;
+        params.set('minPrice', minPrice);
 
     }
 
@@ -517,12 +505,12 @@ function searchProduct(){
 
     if(maxPrice){
 
-        url +=
-            `maxPrice=${maxPrice}&`;
+        params.set('maxPrice', maxPrice);
 
     }
 
-    window.location.href = url;
+    window.location.href =
+        `/product?${params.toString()}`;
 
 }
 

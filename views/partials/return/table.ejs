@@ -50,7 +50,7 @@
                     style="width:220px;">
 
                     <option value="">
-                        -- Trạng thái --
+                       Trạng thái
                     </option>
 
                     <option
@@ -86,6 +86,8 @@
                     </option>
 
                 </select>
+
+                <%- include('../shared/date-filter', { fromDate, toDate }) %>
 
                 <!-- BUTTON -->
 
@@ -416,9 +418,7 @@
 
                     class="page-link"
 
-                    href="/return?page=1
-                    &keyword=<%= keyword || '' %>
-                    &status=<%= selectedStatus || '' %>">
+                    href="/return?page=1<%= queryString ? '&' + queryString : '' %>">
 
                     First
 
@@ -437,9 +437,7 @@
 
                         class="page-link"
 
-                        href="/return?page=<%= i %>
-                        &keyword=<%= keyword || '' %>
-                        &status=<%= selectedStatus || '' %>">
+                        href="/return?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 
@@ -458,9 +456,7 @@
 
                     class="page-link"
 
-                    href="/return?page=<%= pages %>
-                    &keyword=<%= keyword || '' %>
-                    &status=<%= selectedStatus || '' %>">
+                    href="/return?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
 
                     Last
 
@@ -490,15 +486,21 @@ function searchReturn(){
             'status'
         ).value;
 
-    let url =
-        `/return?keyword=${
-            encodeURIComponent(
-                keyword
-            )
-        }&status=${status}`;
+    const params =
+        appendAdminDateParams(
+            new URLSearchParams()
+        );
+
+    if(keyword){
+        params.set('keyword', keyword);
+    }
+
+    if(status){
+        params.set('status', status);
+    }
 
     window.location.href =
-        url;
+        `/return?${params.toString()}`;
 
 }
 

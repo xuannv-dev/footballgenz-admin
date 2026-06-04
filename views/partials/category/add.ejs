@@ -83,7 +83,7 @@
             >
 
             <button
-                id="btnUpload"
+                id="btnUploadThumbnail"
                 class="btn btn-info"
                 style="margin-top:10px;">
 
@@ -135,7 +135,11 @@
 let imageUrl = '';
 
 /* ================= UPLOAD IMAGE ================= */
-$('#btnUpload').click(function(e){
+document
+        .getElementById('btnUploadThumbnail')
+        .addEventListener(
+            'click',
+            async function(e){
 
     e.preventDefault();
 
@@ -168,12 +172,12 @@ $('#btnUpload').click(function(e){
 
         success: function(response){
 
-            imageUrl = response;
+            imageUrl = response.url;
 
             $('#preview').html(`
 
                 <img
-                    src="${response}"
+                    src="${response.url}"
                     style="
                         width:120px;
                         height:120px;
@@ -201,7 +205,11 @@ $('#btnUpload').click(function(e){
 
 
 /* ================= ADD CATEGORY ================= */
-$('#btnAdd').click(function(){
+document
+        .getElementById('btnAdd')
+        .addEventListener(
+            'click',
+            async function(e){
 
     let group =
         $('#group').val().trim();

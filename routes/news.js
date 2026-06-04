@@ -4,6 +4,11 @@ const router = express.Router();
 
 const News = require('../models/news');
 
+const {
+    applyDateRangeFilter,
+    buildQueryString
+} = require('../utils/adminDateFilter');
+
 /* =====================================================
     LIST NEWS
 ===================================================== */
@@ -37,6 +42,14 @@ router.get('/', async function (req, res) {
             };
 
         }
+
+        const dateFilter =
+            applyDateRangeFilter(query, req.query);
+
+        const queryString =
+            buildQueryString(req.query, {
+                page: undefined
+            });
 
         // ================= GET NEWS =================
 
@@ -72,7 +85,15 @@ router.get('/', async function (req, res) {
                         count / pageSize
                     ),
 
-                keyword
+                keyword,
+
+                fromDate:
+                    dateFilter.fromDate,
+
+                toDate:
+                    dateFilter.toDate,
+
+                queryString
 
             }
         );

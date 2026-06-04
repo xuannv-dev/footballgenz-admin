@@ -42,6 +42,8 @@
                     style="width:250px;"
                 >
 
+                <%- include('../shared/date-filter', { fromDate, toDate }) %>
+
                 <!-- SEARCH -->
 
                 <button
@@ -292,8 +294,7 @@
 
                     class="page-link"
 
-                    href="/news?page=1
-                    &keyword=<%= keyword || '' %>">
+                    href="/news?page=1<%= queryString ? '&' + queryString : '' %>">
 
                     First
 
@@ -312,8 +313,7 @@
 
                         class="page-link"
 
-                        href="/news?page=<%= i %>
-                        &keyword=<%= keyword || '' %>">
+                        href="/news?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 
@@ -332,8 +332,7 @@
 
                     class="page-link"
 
-                    href="/news?page=<%= pages %>
-                    &keyword=<%= keyword || '' %>">
+                    href="/news?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
 
                     Last
 
@@ -358,15 +357,17 @@ function searchNews(){
             'keyword'
         ).value;
 
-    let url =
-        `/news?keyword=${
-            encodeURIComponent(
-                keyword
-            )
-        }`;
+    const params =
+        appendAdminDateParams(
+            new URLSearchParams()
+        );
+
+    if(keyword){
+        params.set('keyword', keyword);
+    }
 
     window.location.href =
-        url;
+        `/news?${params.toString()}`;
 
 }
 

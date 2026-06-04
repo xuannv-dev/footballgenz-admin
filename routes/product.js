@@ -13,6 +13,11 @@ const calculateStock =
 const formatCurrency =
     require('../utils/formatCurrency');
 
+const {
+    applyDateRangeFilter,
+    buildQueryString
+} = require('../utils/adminDateFilter');
+
 /* =====================================================
     LIST PRODUCT
 ===================================================== */
@@ -96,6 +101,14 @@ router.get('/', async function (req, res) {
 
         }
 
+        const dateFilter =
+            applyDateRangeFilter(query, req.query);
+
+        const queryString =
+            buildQueryString(req.query, {
+                page: undefined
+            });
+
         // ================= GET PRODUCT =================
 
         const products =
@@ -137,6 +150,14 @@ router.get('/', async function (req, res) {
                 minPrice,
 
                 maxPrice,
+
+                fromDate:
+                    dateFilter.fromDate,
+
+                toDate:
+                    dateFilter.toDate,
+
+                queryString,
 
                 calculateStock,
 
@@ -310,7 +331,13 @@ router.post('/add', async function (req, res) {
                 variants
 
             });
-
+        console.log(
+            JSON.stringify(
+                product,
+                null,
+                2
+            )
+        );    
         await product.save();
 
         res.send(
@@ -318,9 +345,12 @@ router.post('/add', async function (req, res) {
         );
 
     }
-    catch (err) {
+    catch(err){
 
-        console.log(err);
+        console.log(
+            'SAVE ERROR:',
+            err
+        );
 
         res.send(
             'Create failed'
@@ -445,7 +475,7 @@ router.get(
 router.put(
     '/update/:productCode',
     async function (req, res) {
-
+        console.log('Update group product:', req.body.group);
         try {
 
             // ================= VARIANTS =================

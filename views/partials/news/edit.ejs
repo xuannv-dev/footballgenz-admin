@@ -303,18 +303,19 @@ window.addEventListener('load', function(){
                                 body:formData
                             }
                         );
-
-                    if(!response.ok){
+                    const result =
+                        await response.json();          
+                    if(!result.success){
 
                         const text =
-                            await response.text();
+                            result.message || 'Upload ảnh thất bại';
 
                         throw new Error(text);
 
                     }
 
                     const imageUrl =
-                        await response.text();
+                        result.url;
 
                     thumbnailUrl =
                         imageUrl;

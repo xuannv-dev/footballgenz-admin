@@ -1,0 +1,37 @@
+<input
+    type="date"
+    id="fromDate"
+    name="fromDate"
+    value="<%= typeof fromDate !== 'undefined' ? fromDate : '' %>"
+    class="form-control admin-filter-field admin-filter-field--date"
+    style="width:160px;"
+>
+
+<input
+    type="date"
+    id="toDate"
+    name="toDate"
+    value="<%= typeof toDate !== 'undefined' ? toDate : '' %>"
+    class="form-control admin-filter-field admin-filter-field--date"
+    style="width:160px;"
+>
+
+<script>
+function appendAdminDateParams(params){
+    const fromDateInput =
+        document.getElementById('fromDate');
+
+    const toDateInput =
+        document.getElementById('toDate');
+
+    if(fromDateInput && fromDateInput.value){
+        params.set('fromDate', fromDateInput.value);
+    }
+
+    if(toDateInput && toDateInput.value){
+        params.set('toDate', toDateInput.value);
+    }
+
+    return params;
+}
+</script>

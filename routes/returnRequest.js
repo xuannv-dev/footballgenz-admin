@@ -22,6 +22,11 @@ const {
     '../models/returnRequest'
 );
 
+const {
+    applyDateRangeFilter,
+    buildQueryString
+} = require('../utils/adminDateFilter');
+
 /* =====================================================
     LIST RETURN REQUEST
 ===================================================== */
@@ -68,6 +73,14 @@ router.get('/', async function(req, res){
 
         }
 
+        const dateFilter =
+            applyDateRangeFilter(query, req.query);
+
+        const queryString =
+            buildQueryString(req.query, {
+                page: undefined
+            });
+
         // ================= GET DATA =================
 
         const requests =
@@ -111,7 +124,15 @@ router.get('/', async function(req, res){
                 keyword,
 
                 selectedStatus:
-                    status
+                    status,
+
+                fromDate:
+                    dateFilter.fromDate,
+
+                toDate:
+                    dateFilter.toDate,
+
+                queryString
 
             }
 

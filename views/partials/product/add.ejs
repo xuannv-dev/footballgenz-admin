@@ -232,14 +232,13 @@ window.addEventListener('load', function(){
 
                 processData: false,
 
-                success: function (url) {
-
+                success: function (response) {
                     $('#list-product-image').append(`
 
                         <div>
 
                             <img
-                                src="${url}"
+                                src="${response.url}"
                                 width="120"
                                 style="
                                     border-radius:8px;
@@ -352,15 +351,24 @@ window.addEventListener('load', function(){
 
             data: JSON.stringify(data),
 
-            success: function () {
+            success: function (response) {
 
-                alert('Thêm sản phẩm thành công!');
+                if(response === 'Create success'){
 
-                window.location.href =
-                    '/product';
+                    alert(
+                        'Thêm sản phẩm thành công!'
+                    );
+
+                    window.location.href =
+                        '/product';
+
+                }else{
+
+                    alert(response);
+
+                }
 
             },
-
             error: function () {
 
                 alert('Thêm sản phẩm thất bại!');

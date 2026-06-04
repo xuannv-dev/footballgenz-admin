@@ -6,6 +6,27 @@
             </div>
 
             <div class="body">
+                <div
+                    style="
+                        margin-bottom:15px;
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        align-items:center;
+                    ">
+
+                    <%- include('../shared/date-filter', { fromDate: '', toDate: '' }) %>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="loadPendingPayments()">
+
+                        Tìm
+
+                    </button>
+
+                </div>
+
                 <div id="loadingSpinner" class="text-center" style="padding: 40px;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -60,7 +81,17 @@
 <script>
 async function loadPendingPayments() {
     try {
-        const response = await fetch('/order/payment/pending');
+        const params =
+            appendAdminDateParams(
+                new URLSearchParams()
+            );
+
+        const query =
+            params.toString();
+
+        const response = await fetch(
+            `/order/payment/pending${query ? '?' + query : ''}`
+        );
         const data = await response.json();
 
         if (data.success) {
@@ -194,12 +225,17 @@ async function viewDetails(orderCode) {
                 `;
                 order.paymentVerifications.forEach(v => {
                     html += `
-                        <div style="padding: 10px; background: #f9f9f9; border-radius: 4px; margin-bottom: 10px;">
+                        <div style="padding: 15px; background: #f9f9f9; border-radius: 4px; margin-bottom: 15px; border-left: 4px solid #3b5bdb;">
                             <strong>Số tiền:</strong> ${v.amount.toLocaleString()}₫<br>
                             <strong>Thời gian:</strong> ${new Date(v.verifiedAt).toLocaleString('vi-VN')}<br>
                             <strong>Người xác nhận:</strong> ${v.verifiedBy}<br>
-                            ${v.proof ? `<strong>Chứng minh:</strong> <a href="${v.proof}" target="_blank">Xem ảnh</a><br>` : ''}
                             ${v.note ? `<strong>Ghi chú:</strong> ${v.note}<br>` : ''}
+                            ${v.proof ? `
+                                <div style="margin-top: 12px;">
+                                    <strong>Ảnh chứng minh:</strong><br>
+                                    <img src="${v.proof}" style="max-width: 100%; height: auto; border-radius: 6px; margin-top: 8px; max-height: 300px; border: 1px solid #ddd;">
+                                </div>
+                            ` : '<em style="color: #999;">Không có ảnh chứng minh</em><br>'}
                         </div>
                     `;
                 });
@@ -208,11 +244,36 @@ async function viewDetails(orderCode) {
 
             html += `
                 <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
-                    <button class="btn btn-success" onclick="confirmPayment('${orderCode}')">
-                        ✅ Xác nhận thanh toán
+                    <h5>Xác Minh Chi Tiết</h5>
+                    <div class="form-group">
+                        <label>Số Tài Khoản *</label>
+                        <input type="text" class="form-control" id="accountNum" placeholder="Nhập số tài khoản từ ảnh" required>
+                        <small class="text-muted">Số tài khoản người chuyển khoản</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Tên Chủ Tài Khoản *</label>
+                        <input type="text" class="form-control" id="accountHolder" placeholder="VD: NGUYEN VAN A" required>
+                        <small class="text-muted">Tên chủ TK từ ảnh</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngân Hàng *</label>
+                        <input type="text" class="form-control" id="bankName" placeholder="VD: Vietcombank, Techcombank" required>
+                        <small class="text-muted">Ngân hàng từ ảnh</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Thời Gian Chuyển Khoản *</label>
+                        <input type="datetime-local" class="form-control" id="transferTime" required>
+                        <small class="text-muted">Thời gian chuyển từ ảnh</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi Chú Của Admin</label>
+                        <textarea class="form-control" id="adminNotes" rows="3" placeholder="VD: Ảnh rõ ràng, khoảng thời gian hợp lý..."></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="confirmPaymentWithDetails('${orderCode}')">
+                        ✅ Xác Nhận Thanh Toán
                     </button>
                     <button class="btn btn-danger" onclick="rejectPayment('${orderCode}')">
-                        ❌ Từ chối
+                        ❌ Từ Chối
                     </button>
                 </div>
             `;
@@ -238,6 +299,51 @@ async function confirmPayment(orderCode) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({})
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ ' + data.message);
+                document.getElementById('orderModal').classList.remove('show');
+                document.getElementById('orderModal').style.display = 'none';
+                loadPendingPayments();
+            } else {
+                alert('❌ ' + (data.message || 'Lỗi'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Lỗi');
+        }
+    }
+}
+
+// Enhanced confirmation with verification details
+async function confirmPaymentWithDetails(orderCode) {
+    const accountNum = document.getElementById('accountNum').value.trim();
+    const accountHolder = document.getElementById('accountHolder').value.trim();
+    const bankName = document.getElementById('bankName').value.trim();
+    const transferTime = document.getElementById('transferTime').value;
+    const adminNotes = document.getElementById('adminNotes').value.trim();
+
+    if (!accountNum || !accountHolder || !bankName || !transferTime) {
+        alert('❌ Vui lòng điền đầy đủ thông tin xác minh');
+        return;
+    }
+
+    if (confirm('Xác nhận thanh toán với thông tin trên?')) {
+        try {
+            const response = await fetch(`/order/payment/confirm/${orderCode}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    verificationDetails: {
+                        accountNumber: accountNum,
+                        accountHolder: accountHolder,
+                        bankName: bankName,
+                        transferTimestamp: new Date(transferTime).toISOString(),
+                        adminNotes: adminNotes
+                    }
+                })
             });
             const data = await response.json();
 

@@ -102,7 +102,8 @@
 // Upload image
 document.getElementById('btnUpload').addEventListener('click', async function() {
     const file = document.getElementById('fileUpload').files[0];
-
+    let thumbnailUrl =
+        '<%= category.image %>';
     if (!file) {
         alert("Vui lòng chọn ảnh");
         return;
@@ -116,14 +117,33 @@ document.getElementById('btnUpload').addEventListener('click', async function() 
             method: "POST",
             body: formData
         });
+        const result =
+                await response.json();
 
-        if (!response.ok) {
-            throw new Error('Upload failed');
-        }
+            if(result.success){
 
-        const imageUrl = await response.text();
-        document.getElementById('image').value = imageUrl;
-        document.getElementById('previewImage').src = imageUrl;
+                thumbnailUrl =
+                    result.url;
+
+                $('#previewImage').attr(
+                    'src',
+                    result.url
+                );
+
+                alert(
+                    'Upload ảnh thành công'
+                );
+
+            }else{
+
+                alert(
+                    'Upload ảnh thất bại'
+                );
+
+            }
+
+        // const imageUrl = await response.text();
+        document.getElementById('image').value = thumbnailUrl;
         document.getElementById('fileUpload').value = '';
 
         alert("✅ Upload ảnh thành công!");

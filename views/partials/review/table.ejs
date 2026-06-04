@@ -40,6 +40,8 @@
                     style="width:300px;"
                 >
 
+                <%- include('../shared/date-filter', { fromDate, toDate }) %>
+
                 <button
                     class="btn btn-primary"
                     onclick="searchReview()">
@@ -274,7 +276,7 @@
 
                     class="page-link"
 
-                    href="/review?page=1&keyword=<%= keyword || '' %>">
+                    href="/review?page=1<%= queryString ? '&' + queryString : '' %>">
 
                     First
 
@@ -291,7 +293,7 @@
 
                         class="page-link"
 
-                        href="/review?page=<%= i %>&keyword=<%= keyword || '' %>">
+                        href="/review?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
 
                         <%= i %>
 
@@ -308,7 +310,7 @@
 
                     class="page-link"
 
-                    href="/review?page=<%= pages %>&keyword=<%= keyword || '' %>">
+                    href="/review?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
 
                     Last
 
@@ -332,9 +334,17 @@ function searchReview(){
             'keyword'
         ).value;
 
-    window.location.href =
+    const params =
+        appendAdminDateParams(
+            new URLSearchParams()
+        );
 
-        `/review?keyword=${encodeURIComponent(keyword)}`;
+    if(keyword){
+        params.set('keyword', keyword);
+    }
+
+    window.location.href =
+        `/review?${params.toString()}`;
 
 }
 
