@@ -233,6 +233,8 @@ async function viewDetails(orderCode) {
                             <strong>Số tiền:</strong> ${v.amount.toLocaleString()}₫<br>
                             <strong>Thời gian:</strong> ${new Date(v.verifiedAt).toLocaleString('vi-VN')}<br>
                             <strong>Người xác nhận:</strong> ${v.verifiedBy}<br>
+                            ${v.bankName ? `<strong>Ngân hàng khách nhập:</strong> <span class="text-primary">${v.bankName}</span><br>` : ''}
+                            ${v.accountName ? `<strong>Tên khách nhập:</strong> <span class="text-primary">${v.accountName}</span><br>` : ''}
                             ${v.note ? `<strong>Ghi chú:</strong> ${v.note}<br>` : ''}
                             ${v.proof ? `
                                 <div style="margin-top: 12px;">

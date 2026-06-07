@@ -18,6 +18,8 @@ const {
     buildQueryString
 } = require('../utils/adminDateFilter');
 
+const writeAuditLog =
+    require('../utils/auditLog');
 /* =====================================================
     LIST PRODUCT
 ===================================================== */
@@ -339,7 +341,7 @@ router.post('/add', async function (req, res) {
             )
         );    
         await product.save();
-
+        
         res.send(
             'Create success'
         );
@@ -599,9 +601,26 @@ router.put(
                 }
 
             );
+            await writeAuditLog({
 
+                adminId:
+                    req.user._id,
+
+                action:
+                    'UPDATE_PRODUCT',
+
+                targetType:
+                    'Product',
+
+                targetId:
+                    req.params.productCode,
+
+                description:
+                    `Admin cập nhật sản phẩm ${req.params.productCode}`
+
+            });
             res.send(
-                'Update success'
+                'Cập nhật sản phẩm thành công!'
             );
 
         }
@@ -640,7 +659,24 @@ router.get(
                 }
 
             );
+            await writeAuditLog({
 
+                adminId:
+                    req.user._id,
+
+                action:
+                    'DELETE_PRODUCT',
+
+                targetType:
+                    'Product',
+
+                targetId:
+                    req.params.productCode,
+
+                description:
+                    `Admin x sản phẩm ${req.params.productCode}`
+
+            });
             res.redirect('/product');
 
         }

@@ -27,6 +27,8 @@ const {
     buildQueryString
 } = require('../utils/adminDateFilter');
 
+const writeAuditLog =
+    require('../utils/auditLog');
 /* =====================================================
     LIST RETURN REQUEST
 ===================================================== */
@@ -350,7 +352,7 @@ router.post(
             request.adminNote =
                 req.body.adminNote || '';
 
-                        await request.save();
+            await request.save();
 
             /* =========================================
                 RESTORE STOCK
@@ -380,9 +382,26 @@ router.post(
                 }
 
             }
+            await writeAuditLog({
 
+                adminId:
+                    req.user._id,
+
+                action:
+                    'APPROVE_RETURN',
+
+                targetType:
+                    'ReturnRequest',
+
+                targetId:
+                    request._id,
+
+                description:
+                    `Xác nhận yêu cầu trả hàng ${request._id}`
+
+            });
             res.send(
-                'Update success'
+                'Cập nhật trạng thái thành công!'
             );
 
         }
@@ -391,7 +410,7 @@ router.post(
             console.log(err);
 
             res.send(
-                'Update failed'
+                'Cập nhật trạng thái thất bại!'
             );
 
         }

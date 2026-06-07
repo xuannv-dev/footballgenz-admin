@@ -11,6 +11,8 @@ const {
     applyDateRangeFilter,
     buildQueryString
 } = require('../utils/adminDateFilter');
+const writeAuditLog =
+    require('../utils/auditLog');
 
 /* =====================================================
     ORDER STATUS FLOW
@@ -631,9 +633,32 @@ router.post('/payment/confirm/:orderCode', async (req, res) => {
         order.paymentStatus = PAYMENT_STATUS.CONFIRMED;
         order.paymentConfirmedAt = new Date();
         order.paymentConfirmedBy = req.session.passport?.user || 'admin';
-
+        console.log('req.user =', req.user);
+        console.log('req.session.passport =', req.session.passport);
+        console.log(
+            'admin id =',
+            req.user?._id ||
+            req.session?.passport?.user
+        );
         await order.save();
+        await writeAuditLog({
 
+            adminId:
+                req.session.passport?.user,
+
+            action:
+                'VERIFY_PAYMENT',
+
+            targetType:
+                'Order',
+
+            targetId:
+                order.code,
+
+            description:
+                `Xác nhận thanh toán đơn hàng ${order.code}`
+
+        });
         res.json({
             success: true,
             message: 'Đã xác nhận thanh toán',

@@ -186,8 +186,27 @@ router.post(
                 req.body.isActive === 'true';
 
             await review.save();
-
-
+            await writeAuditLog({
+            
+                            adminId:
+                                req.user._id,
+            
+                            action:
+                                'UPDATE_REVIEW',
+            
+                            targetType:
+                                'REVIEW',
+            
+                            targetId:
+                                req.params.id,
+            
+                            description:
+                                `Cập nhật đánh giá ${req.params.id}`
+            
+                        });
+            res.send(
+                'Cập nhật trạng thái thành công!'
+            );
             res.redirect(
                 '/review'
             );
@@ -198,7 +217,7 @@ router.post(
             console.log(err);
 
             res.send(
-                'Update failed'
+                'Cập nhật trạng thái thất bại!'
             );
 
         }
