@@ -32,6 +32,8 @@ var authMiddleware = require('./middleware/auth');
 const user = require('./models/user');
 
 const initializePassport = require('./passport-config');
+const auditLogRouter =
+    require('./routes/auditLog');
 
 var app = express();
 var db = require('./models/db');
@@ -99,7 +101,7 @@ app.use('/admin-user', authMiddleware.isAdmin, adminUserRouter);
 app.use('/news', authMiddleware.isAdmin, newsRouter);
 app.use('/return', authMiddleware.isAdmin, returnRouter);
 app.use('/review', authMiddleware.isAdmin, reviewRouter);
-
+app.use('/audit-log',authMiddleware.isAdmin, auditLogRouter);
 // USER (nếu cần giữ)
 app.use('/user', authMiddleware.enforceAuthentication, userRouter);
 

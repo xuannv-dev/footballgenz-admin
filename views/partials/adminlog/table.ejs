@@ -1,0 +1,406 @@
+<div class="row clearfix">
+
+```
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+    <div class="card">
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <h2>
+
+                📋 NHẬT KÝ HOẠT ĐỘNG HỆ THỐNG
+
+            </h2>
+
+        </div>
+
+        <!-- FILTER -->
+
+        <div
+            style="
+                margin:15px;
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                align-items:center;
+            ">
+
+            <input
+
+                type="text"
+
+                id="keyword"
+
+                value="<%= keyword || '' %>"
+
+                placeholder="🔍 Email Admin..."
+
+                class="form-control"
+
+                style="width:250px;"
+            >
+
+            <select
+
+                id="action"
+
+                class="form-control"
+
+                style="width:250px;">
+
+                <option value="">
+                    Tất cả hành động
+                </option>
+
+                <option
+                    value="UPDATE_PRODUCT"
+                    <%= action === 'UPDATE_PRODUCT' ? 'selected' : '' %>>
+                    Cập nhật sản phẩm
+                </option>
+                <option
+                    value="DELETE_PRODUCT"
+                    <%= action === 'DELETE_PRODUCT' ? 'selected' : '' %>>
+                    Xóa sản phẩm
+                </option>
+                <option
+                    value="VERIFY_PAYMENT"
+                    <%= action === 'VERIFY_PAYMENT' ? 'selected' : '' %>>
+                    Xác minh thanh toán
+                </option>
+
+                <option
+                    value="REJECT_PAYMENT"
+                    <%= action === 'REJECT_PAYMENT' ? 'selected' : '' %>>
+                    Từ chối thanh toán
+                </option>
+
+                <option
+                    value="UPDATE_ORDER_STATUS"
+                    <%= action === 'UPDATE_ORDER_STATUS' ? 'selected' : '' %>>
+                    Cập nhật trạng thái đơn hàng
+                </option>
+
+            </select>
+
+            <%- include(
+                '../shared/date-filter',
+                {
+                    fromDate,
+                    toDate
+                }
+            ) %>
+
+            <button
+
+                class="btn btn-primary"
+
+                onclick="searchLog()">
+
+                Tìm kiếm
+
+            </button>
+
+        </div>
+
+        <!-- TABLE -->
+
+        <div class="body">
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-bordered table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Admin
+                            </th>
+
+                            <th>
+                                Hành động
+                            </th>
+
+                            <th>
+                                Đối tượng
+                            </th>
+
+                            <th>
+                                Mô tả
+                            </th>
+
+                            <th>
+                                Thời gian
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <% logs.forEach(function(log){ %>
+
+                            <tr>
+
+                                <!-- ADMIN -->
+
+                                <td>
+
+                                    <% if(log.admin){ %>
+
+                                        <strong>
+
+                                            <%= log.admin.email %>
+
+                                        </strong>
+
+                                    <% } else { %>
+
+                                        Unknown
+
+                                    <% } %>
+
+                                </td>
+
+                                <!-- ACTION -->
+
+                                <td>
+
+                                    <% if(
+                                        log.action ===
+                                        'VERIFY_PAYMENT'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-green">
+
+                                            XÁC MINH THANH TOÁN
+
+                                        </span>
+
+                                    <% } else if(
+                                        log.action ===
+                                        'REJECT_PAYMENT'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-red">
+
+                                            TỪ CHỐI THANH TOÁN
+
+                                        </span>
+
+                                    <% } else if(
+                                        log.action ===
+                                        'UPDATE_PRODUCT'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-blue">
+
+                                            CẬP NHẬT SẢN PHẨM
+
+                                        </span>
+
+                                    <% } else if(
+                                        log.action ===
+                                        'UPDATE_ORDER_STATUS'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-orange">
+
+                                            CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
+
+                                        </span>
+                                    <% } else if(
+                                        log.action ===
+                                        'DELETE_PRODUCT'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-orange">
+
+                                            XÓA SẢN PHẨM
+
+                                        </span>    
+                                    <% } else { %>
+
+                                        <span
+                                            class="badge bg-grey">
+
+                                            <%= log.action %>
+
+                                        </span>
+
+                                    <% } %>
+
+                                </td>
+
+                                <!-- TARGET -->
+
+                                <td>
+
+                                    <strong>
+
+                                        <%= log.targetId %>
+
+                                    </strong>
+
+                                </td>
+
+                                <!-- DESCRIPTION -->
+
+                                <td
+                                    style="
+                                        max-width:400px;
+                                    ">
+
+                                    <%= log.description %>
+
+                                </td>
+
+                                <!-- CREATED -->
+
+                                <td>
+
+                                    <%= new Date(
+                                        log.createdAt
+                                    ).toLocaleString(
+                                        'vi-VN'
+                                    ) %>
+
+                                </td>
+
+                            </tr>
+
+                        <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- PAGINATION -->
+
+<div class="row clearfix">
+
+<% if(pages > 0) { %>
+
+    <ul class="pagination mx-auto">
+
+        <li
+            class="page-item <%= current == 1 ? 'disabled' : '' %>">
+
+            <a
+
+                class="page-link"
+
+                href="/audit-log?page=1<%= queryString ? '&' + queryString : '' %>">
+
+                First
+
+            </a>
+
+        </li>
+
+        <% for(let i=1;i<=pages;i++){ %>
+
+            <li
+                class="page-item <%= current == i ? 'active' : '' %>">
+
+                <a
+
+                    class="page-link"
+
+                    href="/audit-log?page=<%= i %><%= queryString ? '&' + queryString : '' %>">
+
+                    <%= i %>
+
+                </a>
+
+            </li>
+
+        <% } %>
+
+        <li
+            class="page-item <%= current == pages ? 'disabled' : '' %>">
+
+            <a
+
+                class="page-link"
+
+                href="/audit-log?page=<%= pages %><%= queryString ? '&' + queryString : '' %>">
+
+                Last
+
+            </a>
+
+        </li>
+
+    </ul>
+
+<% } %>
+
+</div>
+
+<script>
+
+function searchLog(){
+
+    const keyword =
+
+        document.getElementById(
+            'keyword'
+        ).value;
+
+    const action =
+
+        document.getElementById(
+            'action'
+        ).value;
+
+    const params =
+        appendAdminDateParams(
+            new URLSearchParams()
+        );
+
+    if(!params){
+        return;
+    }
+
+    if(keyword){
+        params.set(
+            'keyword',
+            keyword
+        );
+    }
+
+    if(action){
+        params.set(
+            'action',
+            action
+        );
+    }
+
+    window.location.href =
+        `/audit-log?${params.toString()}`;
+
+}
+
+</script>

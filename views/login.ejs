@@ -17,6 +17,9 @@
     <link href="/plugins/node-waves/waves.css" rel="stylesheet" />
     <link href="/plugins/animate-css/animate.css" rel="stylesheet" />
 
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <style>
         :root {
             --primary-color: #4f46e5;
@@ -177,17 +180,25 @@
                         </span>
                         <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required>
                     </div>
+                    <!-- 
+                    <div class="m-b-20 text-center">
+                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LejvhEtAAAAALhdnnHLyuIGk6WIiaDHviiWM5AV"></div>
+                    </div> 
+                    -->
                     <div class="row m-t-15">
                         <div class="col-xs-12">
-                            <input type="checkbox" name="rememberme" id="rememberme" class="filled-in">
+                            <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-indigo">
                             <label for="rememberme" style="color: #64748b; font-weight: 500; cursor: pointer;">Ghi nhớ đăng nhập</label>
                         </div>
                         <div class="col-xs-12 m-t-15">
                             <button class="btn btn-login waves-effect" type="submit">ĐĂNG NHẬP</button>
                         </div>
                     </div>
-                    <% if(typeof message !="undefined"){%>
-                        <p class="text-danger"><%=message%></p>
+                    <% if (messages.error && messages.error.length > 0) { %>
+                        <p class="text-danger"><%= messages.error %></p>
+                    <% } %>
+                    <% if (messages.message && messages.message.length > 0) { %>
+                        <p class="text-success"><%= messages.message %></p>
                     <%}%>
                     <div class="row m-t-25 auth-links">
                         <div class="col-xs-6">

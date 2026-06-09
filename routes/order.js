@@ -399,9 +399,26 @@ router.put(
                 newStatus;
 
             await order.save();
+            await writeAuditLog({
 
+                adminId:
+                    req.user._id,
+
+                action:
+                    'UPDATE_ORDER_STATUS',
+
+                targetType:
+                    'Order',
+
+                targetId:
+                    order.code,
+
+                description:
+                    `Cập nhật trạng thái đơn ${order.code} từ ${currentStatus} sang ${newStatus}`
+
+            });
             res.send(
-                'Update success'
+                'Cập nhật trạng thái thành công!'
             );
 
         }
@@ -411,7 +428,7 @@ router.put(
 
             res.status(500)
                 .send(
-                    'Update failed'
+                    'Cập nhật trạng thái thất bại!'
                 );
 
         }
@@ -619,7 +636,13 @@ router.post('/payment/confirm/:orderCode', async (req, res) => {
         if (!order) {
             return res.status(404).json({ success: false, message: 'Đơn hàng không tồn tại' });
         }
-
+        if (order.paymentStatus === PAYMENT_STATUS.CONFIRMED) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    'Đơn hàng đã được xác nhận thanh toán trước đó'
+            });
+        }
         if (order.typePay !== 1) {
             return res.status(400).json({ success: false, message: 'Đơn hàng này không dùng chuyển khoản' });
         }
@@ -691,7 +714,24 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
         order.note = (order.note || '') + `\n[REJECTED] ${reason || 'Không có lý do'}`;
 
         await order.save();
+        await writeAuditLog({
 
+            adminId:
+                req.session.passport?.user,
+
+            action:
+                'REJECT_PAYMENT',
+
+            targetType:
+                'Order',
+
+            targetId:
+                order.code,
+
+            description:
+                `Từ chối xác nhận thanh toán đơn ${order.code}. Lý do: ${reason || 'Không có lý do'}`
+
+        });
         res.json({
             success: true,
             message: 'Đã từ chối xác nhận thanh toán',

@@ -1,21 +1,41 @@
 <div class="row clearfix">
 
-    <!-- TOTAL PRODUCT -->
-
-    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+    <!-- TOTAL REVENUE -->
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="stat-card bg-gradient-indigo">
+            <div class="label">Tổng doanh thu</div>
+            <div class="number"><%= totalRevenue.toLocaleString('vi-VN') %>₫</div>
+            <i class="material-icons icon">attach_money</i>
+        </div>
+    </div>
+
+    <!-- TODAY ORDERS -->
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div class="stat-card bg-gradient-emerald">
+            <div class="label">Đơn hàng hôm nay</div>
+            <div class="number"><%= todayOrders %></div>
+            <i class="material-icons icon">today</i>
+        </div>
+    </div>
+
+    <!-- TOTAL PRODUCT -->
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+        <div class="stat-card bg-gradient-rose">
             <div class="label">Tổng sản phẩm</div>
             <div class="number"><%= totalProducts %></div>
             <i class="material-icons icon">inventory</i>
         </div>
     </div>
+</div>
+
+<div class="row clearfix">
 
     <!-- TOTAL USER -->
 
     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-        <div class="stat-card bg-gradient-emerald">
+        <div class="stat-card" style="background: linear-gradient(135deg, #64748b 0%, #334155 100%);">
             <div class="label">Người dùng</div>
-            <div class="number"><%= totalUsers %></div>
+            <div class="number"><%= totalCustomers %></div>
             <i class="material-icons icon">people</i>
         </div>
     </div>
@@ -45,7 +65,13 @@
 <div class="row clearfix">
     <div class="col-lg-8">
         <div class="chart-container">
-            <h4 class="m-b-20" style="font-weight: 600; color: #1e293b;">📈 Doanh thu 6 tháng gần nhất</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h4 style="font-weight: 600; color: #1e293b; margin: 0;">📈 Doanh thu theo tháng</h4>
+                <button type="button" class="btn btn-success waves-effect btn-xs" id="btnExportExcel">
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">file_download</i>
+                    Xuất Excel
+                </button>
+            </div>
             <div style="height: 320px; position: relative;">
                 <canvas id="revenueChart"></canvas>
             </div>
@@ -53,36 +79,208 @@
     </div>
     <div class="col-lg-4">
         <div class="chart-container">
-            <h4 class="m-b-20" style="font-weight: 600; color: #1e293b;">📊 Tổng quan</h4>
+            <h4 class="m-b-20" style="font-weight: 600; color: #1e293b;">📊 7 ngày gần nhất</h4>
             <div style="height: 320px; position: relative;">
                 <canvas id="dashboardChart"></canvas>
             </div>
         </div>
     </div>
 </div>
+<!-- ================= CONTENT ================= -->
 
+<div class="row clearfix">
+
+
+    <!-- LEFT -->
+    <div class="col-lg-8">
+
+        <!-- RECENT ORDER -->
+        <div class="card">
+
+            <div class="header">
+                <h2>🧾 ĐƠN HÀNG GẦN ĐÂY</h2>
+            </div>
+
+            <div class="body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% recentOrders.forEach(order => { %>
+
+                                <tr>
+
+                                    <td>
+                                        <%= order.code %>
+                                    </td>
+
+                                    <td>
+                                        <%= order.receiver %>
+                                    </td>
+
+                                    <td>
+                                        <%= order.totalprice.toLocaleString('vi-VN') %>₫
+                                    </td>
+
+                                    <td>
+
+                                        <% if(order.status == 0){ %>
+                                            <span class="label bg-red">Đã hủy</span>
+                                        <% } %>
+
+                                        <% if(order.status == 1){ %>
+                                            <span class="label bg-blue">Tiếp nhận</span>
+                                        <% } %>
+
+                                        <% if(order.status == 2){ %>
+                                            <span class="label bg-orange">Chuẩn bị</span>
+                                        <% } %>
+
+                                        <% if(order.status == 3){ %>
+                                            <span class="label bg-cyan">Đang giao</span>
+                                        <% } %>
+
+                                        <% if(order.status == 4){ %>
+                                            <span class="label bg-green">Hoàn thành</span>
+                                        <% } %>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-lg-4">
+
+        <!-- TOP SELLING -->
+        <div class="card">
+
+            <div class="header">
+                <h2>🔥 TOP BÁN CHẠY</h2>
+            </div>
+
+            <div class="body">
+
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th>Mã SP</th>
+                            <th>Đã bán</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <% topSelling.forEach(item => { %>
+
+                            <tr>
+
+                                <td>
+                                    <%= item._id %>
+                                </td>
+
+                                <td>
+                                    <%= item.sold %>
+                                </td>
+
+                            </tr>
+
+                        <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- LOW STOCK -->
+        <div class="card">
+
+            <div class="header">
+                <h2>⚠️ SẮP HẾT HÀNG</h2>
+            </div>
+
+            <div class="body">
+
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th>Tên SP</th>
+                            <th>Tồn kho</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <% lowStockProducts.forEach(p => { %>
+
+                            <tr>
+
+                                <td>
+                                    <%= p.name %>
+                                </td>
+
+                                <td>
+                                    <%= Math.min(...p.variants.map(v => v.stock)) %>
+                                </td>
+
+                            </tr>
+
+                        <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    // Biểu đồ tổng quan hệ thống (Cột)
+    // Biểu đồ doanh thu 7 ngày gần nhất
+    const raw7Days = <%- JSON.stringify(last7Days || []) %>;
     const ctxDash = document.getElementById('dashboardChart');
     new Chart(ctxDash, {
         type: 'bar',
         data: {
-            labels: [
-                'Sản phẩm',
-                'Người dùng',
-                'Đơn hàng',
-                'Tin tức'
-            ],
+            labels: raw7Days.map(item => item._id.day + '/' + item._id.month),
             datasets: [{
-                label: 'Thống kê hệ thống',
-                data: [<%= totalProducts %>, <%= totalUsers %>, <%= totalOrders %>, <%= totalNews %>],
-                backgroundColor: [
-                    'rgba(79, 70, 229, 0.8)',
-                    'rgba(16, 185, 129, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                    'rgba(244, 63, 94, 0.8)'
-                ],
+                label: 'Doanh thu ngày',
+                data: raw7Days.map(item => item.total),
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
                 borderRadius: 8
             }]
         },
@@ -91,11 +289,19 @@ document.addEventListener('DOMContentLoaded', function(){
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: (val) => val.toLocaleString('vi-VN') + 'đ'
+                    }
+                }
             }
         }
     });
 
-    // Biểu đồ doanh thu (Đường cong mượt mà)
+    // Biểu đồ doanh thu tháng (Dữ liệu thật từ database)
+    const rawMonth = <%- JSON.stringify(monthlyRevenue || []) %>;
     const ctxRev = document.getElementById('revenueChart').getContext('2d');
     const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
@@ -104,10 +310,10 @@ document.addEventListener('DOMContentLoaded', function(){
     new Chart(ctxRev, {
         type: 'line',
         data: {
-            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+            labels: rawMonth.map(item => 'Tháng ' + item._id.month),
             datasets: [{
                 label: 'Doanh thu',
-                data: [1200000, 1900000, 3000000, 5000000, 2300000, 3500000],
+                data: rawMonth.map(item => item.total),
                 backgroundColor: gradient,
                 borderColor: '#4f46e5',
                 borderWidth: 3,
@@ -135,6 +341,24 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
         }
+    });
+
+    // Logic xử lý xuất file Excel
+    document.getElementById('btnExportExcel').addEventListener('click', function() {
+        if (!rawMonth || rawMonth.length === 0) {
+            return alert('Không có dữ liệu doanh thu để xuất!');
+        }
+
+        // Chuẩn bị dữ liệu: Map lại các field để hiển thị tiêu đề tiếng Việt đẹp trong Excel
+        const dataToExport = rawMonth.map(item => ({
+            'Tháng': 'Tháng ' + item._id.month,
+            'Doanh thu (VNĐ)': item.total
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Doanh Thu");
+        XLSX.writeFile(workbook, "Bao_cao_doanh_thu_thang.xlsx");
     });
 });
 </script>

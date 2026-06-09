@@ -9,69 +9,69 @@
 <div class="row clearfix">
 
 
-<!-- TOTAL ORDER -->
-<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-    <div class="info-box bg-pink hover-expand-effect">
-        <div class="icon">
-            <i class="material-icons">shopping_cart</i>
-        </div>
+    <!-- TOTAL ORDER -->
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-pink hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">shopping_cart</i>
+            </div>
 
-        <div class="content">
-            <div class="text">TỔNG ĐƠN</div>
-            <div class="number">
-                <%= totalOrders %>
+            <div class="content">
+                <div class="text">TỔNG ĐƠN</div>
+                <div class="number">
+                    <%= totalOrders %>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- REVENUE -->
-<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-    <div class="info-box bg-cyan hover-expand-effect">
-        <div class="icon">
-            <i class="material-icons">attach_money</i>
-        </div>
+    <!-- REVENUE -->
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-cyan hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">attach_money</i>
+            </div>
 
-        <div class="content">
-            <div class="text">DOANH THU</div>
-            <div class="number">
-                <%= totalRevenue.toLocaleString('vi-VN') %>₫
+            <div class="content">
+                <div class="text">DOANH THU</div>
+                <div class="number">
+                    <%= totalRevenue.toLocaleString('vi-VN') %>₫
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- TODAY -->
-<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-    <div class="info-box bg-green hover-expand-effect">
-        <div class="icon">
-            <i class="material-icons">today</i>
-        </div>
+    <!-- TODAY -->
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-green hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">today</i>
+            </div>
 
-        <div class="content">
-            <div class="text">ĐƠN HÔM NAY</div>
-            <div class="number">
-                <%= todayOrders %>
+            <div class="content">
+                <div class="text">ĐƠN HÔM NAY</div>
+                <div class="number">
+                    <%= todayOrders %>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- PRODUCT -->
-<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-    <div class="info-box bg-orange hover-expand-effect">
-        <div class="icon">
-            <i class="material-icons">inventory</i>
-        </div>
+    <!-- PRODUCT -->
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-orange hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">inventory</i>
+            </div>
 
-        <div class="content">
-            <div class="text">SẢN PHẨM</div>
-            <div class="number">
-                <%= totalProducts %>
+            <div class="content">
+                <div class="text">SẢN PHẨM</div>
+                <div class="number">
+                    <%= totalProducts %>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </div>
 
@@ -79,21 +79,21 @@
 
 <div class="row clearfix">
 
-<!-- CUSTOMER -->
-<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-    <div class="info-box bg-purple hover-expand-effect">
-        <div class="icon">
-            <i class="material-icons">people</i>
-        </div>
+    <!-- CUSTOMER -->
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-purple hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">people</i>
+            </div>
 
-        <div class="content">
-            <div class="text">KHÁCH HÀNG</div>
-            <div class="number">
-                <%= totalCustomers %>
+            <div class="content">
+                <div class="text">KHÁCH HÀNG</div>
+                <div class="number">
+                    <%= totalCustomers %>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 </div>
@@ -103,39 +103,39 @@
 <div class="row clearfix">
 
 
-<!-- MONTH -->
-<div class="col-lg-8">
+    <!-- MONTH -->
+    <div class="col-lg-8">
 
-    <div class="card">
+        <div class="card">
 
-        <div class="header">
-            <h2>📈 DOANH THU THEO THÁNG</h2>
-        </div>
+            <div class="header">
+                <h2>📈 DOANH THU THEO THÁNG</h2>
+            </div>
 
-        <div class="body">
-            <canvas id="chartMonth" height="140"></canvas>
-        </div>
+            <div class="body">
+                <canvas id="chartMonth" height="140"></canvas>
+            </div>
 
-    </div>
-
-</div>
-
-<!-- 7 DAYS -->
-<div class="col-lg-4">
-
-    <div class="card">
-
-        <div class="header">
-            <h2>📊 7 NGÀY GẦN NHẤT</h2>
-        </div>
-
-        <div class="body">
-            <canvas id="chart7days" height="140"></canvas>
         </div>
 
     </div>
 
-</div>
+    <!-- 7 DAYS -->
+    <div class="col-lg-4">
+
+        <div class="card">
+
+            <div class="header">
+                <h2>📊 7 NGÀY GẦN NHẤT</h2>
+            </div>
+
+            <div class="body">
+                <canvas id="chart7days" height="140"></canvas>
+            </div>
+
+        </div>
+
+    </div>
 
 
 </div>
@@ -145,71 +145,166 @@
 <div class="row clearfix">
 
 
-<!-- LEFT -->
-<div class="col-lg-8">
+    <!-- LEFT -->
+    <div class="col-lg-8">
 
-    <!-- RECENT ORDER -->
-    <div class="card">
+        <!-- RECENT ORDER -->
+        <div class="card">
 
-        <div class="header">
-            <h2>🧾 ĐƠN HÀNG GẦN ĐÂY</h2>
+            <div class="header">
+                <h2>🧾 ĐƠN HÀNG GẦN ĐÂY</h2>
+            </div>
+
+            <div class="body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% recentOrders.forEach(order => { %>
+
+                                <tr>
+
+                                    <td>
+                                        <%= order.code %>
+                                    </td>
+
+                                    <td>
+                                        <%= order.receiver %>
+                                    </td>
+
+                                    <td>
+                                        <%= order.totalprice.toLocaleString('vi-VN') %>₫
+                                    </td>
+
+                                    <td>
+
+                                        <% if(order.status == 0){ %>
+                                            <span class="label bg-red">Đã hủy</span>
+                                        <% } %>
+
+                                        <% if(order.status == 1){ %>
+                                            <span class="label bg-blue">Tiếp nhận</span>
+                                        <% } %>
+
+                                        <% if(order.status == 2){ %>
+                                            <span class="label bg-orange">Chuẩn bị</span>
+                                        <% } %>
+
+                                        <% if(order.status == 3){ %>
+                                            <span class="label bg-cyan">Đang giao</span>
+                                        <% } %>
+
+                                        <% if(order.status == 4){ %>
+                                            <span class="label bg-green">Hoàn thành</span>
+                                        <% } %>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="body">
+    </div>
 
-            <div class="table-responsive">
+    <!-- RIGHT -->
+    <div class="col-lg-4">
 
-                <table class="table table-bordered table-hover">
+        <!-- TOP SELLING -->
+        <div class="card">
+
+            <div class="header">
+                <h2>🔥 TOP BÁN CHẠY</h2>
+            </div>
+
+            <div class="body">
+
+                <table class="table table-bordered">
 
                     <thead>
                         <tr>
-                            <th>Mã đơn</th>
-                            <th>Khách</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
+                            <th>Mã SP</th>
+                            <th>Đã bán</th>
                         </tr>
                     </thead>
 
                     <tbody>
 
-                        <% recentOrders.forEach(order => { %>
+                        <% topSelling.forEach(item => { %>
 
                             <tr>
 
                                 <td>
-                                    <%= order.code %>
+                                    <%= item._id %>
                                 </td>
 
                                 <td>
-                                    <%= order.receiver %>
+                                    <%= item.sold %>
+                                </td>
+
+                            </tr>
+
+                        <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- LOW STOCK -->
+        <div class="card">
+
+            <div class="header">
+                <h2>⚠️ SẮP HẾT HÀNG</h2>
+            </div>
+
+            <div class="body">
+
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th>Tên SP</th>
+                            <th>Tồn kho</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <% lowStockProducts.forEach(p => { %>
+
+                            <tr>
+
+                                <td>
+                                    <%= p.name %>
                                 </td>
 
                                 <td>
-                                    <%= order.totalprice.toLocaleString('vi-VN') %>₫
-                                </td>
-
-                                <td>
-
-                                    <% if(order.status == 0){ %>
-                                        <span class="label bg-red">Đã hủy</span>
-                                    <% } %>
-
-                                    <% if(order.status == 1){ %>
-                                        <span class="label bg-blue">Tiếp nhận</span>
-                                    <% } %>
-
-                                    <% if(order.status == 2){ %>
-                                        <span class="label bg-orange">Chuẩn bị</span>
-                                    <% } %>
-
-                                    <% if(order.status == 3){ %>
-                                        <span class="label bg-cyan">Đang giao</span>
-                                    <% } %>
-
-                                    <% if(order.status == 4){ %>
-                                        <span class="label bg-green">Hoàn thành</span>
-                                    <% } %>
-
+                                    <%= Math.min(...p.variants.map(v => v.stock)) %>
                                 </td>
 
                             </tr>
@@ -225,103 +320,7 @@
         </div>
 
     </div>
-
-</div>
-
-<!-- RIGHT -->
-<div class="col-lg-4">
-
-    <!-- TOP SELLING -->
-    <div class="card">
-
-        <div class="header">
-            <h2>🔥 TOP BÁN CHẠY</h2>
-        </div>
-
-        <div class="body">
-
-            <table class="table table-bordered">
-
-                <thead>
-                    <tr>
-                        <th>Mã SP</th>
-                        <th>Đã bán</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <% topSelling.forEach(item => { %>
-
-                        <tr>
-
-                            <td>
-                                <%= item._id %>
-                            </td>
-
-                            <td>
-                                <%= item.sold %>
-                            </td>
-
-                        </tr>
-
-                    <% }) %>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-    <!-- LOW STOCK -->
-    <div class="card">
-
-        <div class="header">
-            <h2>⚠️ SẮP HẾT HÀNG</h2>
-        </div>
-
-        <div class="body">
-
-            <table class="table table-bordered">
-
-                <thead>
-                    <tr>
-                        <th>Tên SP</th>
-                        <th>Tồn kho</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <% lowStockProducts.forEach(p => { %>
-
-                        <tr>
-
-                            <td>
-                                <%= p.name %>
-                            </td>
-
-                            <td>
-                                <%= Math.min(...p.variants.map(v => v.stock)) %>
-                            </td>
-
-                        </tr>
-
-                    <% }) %>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</div>
-
-
+    
 </div>
 <script>
 
