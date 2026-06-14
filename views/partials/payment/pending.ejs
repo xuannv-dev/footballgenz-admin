@@ -310,8 +310,7 @@ async function confirmPayment(orderCode) {
 
             if (data.success) {
                 alert('✅ ' + data.message);
-                document.getElementById('orderModal').classList.remove('show');
-                document.getElementById('orderModal').style.display = 'none';
+                $('#orderModal').modal('hide');
                 loadPendingPayments();
             } else {
                 alert('❌ ' + (data.message || 'Lỗi'));
@@ -355,8 +354,7 @@ async function confirmPaymentWithDetails(orderCode) {
 
             if (data.success) {
                 alert('✅ ' + data.message);
-                document.getElementById('orderModal').classList.remove('show');
-                document.getElementById('orderModal').style.display = 'none';
+                $('#orderModal').modal('hide');
                 loadPendingPayments();
             } else {
                 alert('❌ ' + (data.message || 'Lỗi'));
@@ -381,8 +379,7 @@ async function rejectPayment(orderCode) {
 
             if (data.success) {
                 alert('✅ ' + data.message);
-                document.getElementById('orderModal').classList.remove('show');
-                document.getElementById('orderModal').style.display = 'none';
+                $('#orderModal').modal('hide');
                 loadPendingPayments();
             } else {
                 alert('❌ ' + (data.message || 'Lỗi'));

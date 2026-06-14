@@ -145,6 +145,8 @@ document
 
     let file =
         $('#file').prop('files')[0];
+        
+    let group = $('#group').val().trim();
 
     if(!file){
 
@@ -154,8 +156,16 @@ document
 
     }
 
+    if(!group){
+
+        alert("Vui lòng nhập tên danh mục trước để hệ thống phân loại thư mục lưu ảnh!");
+
+        return;
+    }
+
     let formData = new FormData();
 
+    formData.append('group', group);
     formData.append('file', file);
 
     $.ajax({

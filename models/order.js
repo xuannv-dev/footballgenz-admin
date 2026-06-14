@@ -14,7 +14,8 @@ const PAYMENT_STATUS = {
     PENDING: 'pending',           // chờ xác nhận
     AWAITING: 'awaiting_payment', // chờ thanh toán
     VERIFIED: 'verified',         // đã xác nhận
-    CONFIRMED: 'confirmed'        // đã confirm bởi admin
+    CONFIRMED: 'confirmed',        // đã confirm bởi admin
+    REJECTED: 'rejected'          // đã bị từ chối
 };
 
 const OrderSchema = new mongoose.Schema({
@@ -95,7 +96,13 @@ const OrderSchema = new mongoose.Schema({
         enum: Object.values(PAYMENT_STATUS),
         default: PAYMENT_STATUS.PENDING
     },
-
+    // Lý do từ chối thanh toán
+    rejectionReason: {
+        type: String,
+        default: ''
+    },
+    paymentRejectedAt: Date,
+    paymentRejectedBy: String,
     paymentVerifications: [{
         amount: Number,
         verifiedAt: Date,

@@ -98,7 +98,13 @@
         <div class="card">
 
             <div class="header">
-                <h2>🧾 ĐƠN HÀNG GẦN ĐÂY</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0;">🧾 ĐƠN HÀNG GẦN ĐÂY</h2>
+                    <button type="button" class="btn btn-primary waves-effect btn-xs" id="btnExportRecentOrders">
+                        <i class="material-icons" style="font-size: 18px; vertical-align: middle;">file_download</i>
+                        Xuất Excel
+                    </button>
+                </div>
             </div>
 
             <div class="body">
@@ -270,38 +276,40 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    // Biểu đồ doanh thu 7 ngày gần nhất
+    // Đảm bảo XLSX đã sẵn sàng
+    const XLSX = window.XLSX;
+
+    const rawRecentOrders = <%- JSON.stringify(recentOrders || []) %>;
     const raw7Days = <%- JSON.stringify(last7Days || []) %>;
+    const rawMonth = <%- JSON.stringify(monthlyRevenue || []) %>;
+
+    // ===== BIỂU ĐỒ 1: DOANH THU 7 NGÀY GẦN NHẤT (CỘT) =====
     const ctxDash = document.getElementById('dashboardChart');
     new Chart(ctxDash, {
         type: 'bar',
         data: {
             labels: raw7Days.map(item => item._id.day + '/' + item._id.month),
             datasets: [{
-                label: 'Doanh thu ngày',
+                label: 'Doanh thu (₫)',
                 data: raw7Days.map(item => item.total),
-                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                backgroundColor: '#29b6f6',
                 borderRadius: 8
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
             scales: {
                 y: {
                     ticks: {
-                        callback: (val) => val.toLocaleString('vi-VN') + 'đ'
+                        callback: (val) => val.toLocaleString('vi-VN') + '₫'
                     }
                 }
             }
         }
     });
 
-    // Biểu đồ doanh thu tháng (Dữ liệu thật từ database)
-    const rawMonth = <%- JSON.stringify(monthlyRevenue || []) %>;
+    // ===== BIỂU ĐỒ 2: DOANH THU THEO THÁNG (ĐƯỜNG) =====
     const ctxRev = document.getElementById('revenueChart').getContext('2d');
     const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
@@ -343,6 +351,56 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
+    // Hàm trợ giúp để áp dụng các kiểu dáng cơ bản cho worksheet
+    function applyBasicTableStyles(worksheet, columnWidths) {
+        const range = window.XLSX.utils.decode_range(worksheet['!ref']);
+
+        // Style cho hàng tiêu đề (header)
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cellref = window.XLSX.utils.encode_cell({ r: 0, c: C });
+            if (!worksheet[cellref]) continue;
+            worksheet[cellref].s = {
+                font: { bold: true, color: { rgb: "FFFFFFFF" } }, // Chữ trắng, in đậm
+                fill: { fgColor: { rgb: "FF4F46E5" } }, // Nền màu indigo (primary color)
+                alignment: { horizontal: "center", vertical: "center" },
+                border: {
+                    top: { style: "thin", color: { auto: 1 } },
+                    bottom: { style: "thin", color: { auto: 1 } },
+                    left: { style: "thin", color: { auto: 1 } },
+                    right: { style: "thin", color: { auto: 1 } }
+                }
+            };
+        }
+
+        // Áp dụng viền cho tất cả các ô dữ liệu
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cellref = window.XLSX.utils.encode_cell({ r: R, c: C });
+                if (!worksheet[cellref]) continue;
+                if (!worksheet[cellref].s) worksheet[cellref].s = {}; // Khởi tạo style nếu chưa có
+                worksheet[cellref].s.border = {
+                    top: { style: "thin", color: { auto: 1 } },
+                    bottom: { style: "thin", color: { auto: 1 } },
+                    left: { style: "thin", color: { auto: 1 } },
+                    right: { style: "thin", color: { auto: 1 } }
+                };
+
+                // Định dạng tiền tệ cho cột "Doanh thu (VNĐ)" và "Tổng tiền (VNĐ)"
+                // Cần xác định cột nào là cột tiền tệ dựa vào tiêu đề hoặc vị trí
+                if (worksheet[XLSX.utils.encode_cell({ r: 0, c: C })].v === 'Doanh thu (VNĐ)' ||
+                    worksheet[XLSX.utils.encode_cell({ r: 0, c: C })].v === 'Tổng tiền (VNĐ)') {
+                    worksheet[cellref].t = 'n'; // Set type to number
+                    worksheet[cellref].z = '#,##0 "₫"'; // Custom number format for currency
+                }
+            }
+        }
+
+        // Thiết lập độ rộng cột
+        if (columnWidths) {
+            worksheet['!cols'] = columnWidths;
+        }
+    }
+
     // Logic xử lý xuất file Excel
     document.getElementById('btnExportExcel').addEventListener('click', function() {
         if (!rawMonth || rawMonth.length === 0) {
@@ -355,10 +413,47 @@ document.addEventListener('DOMContentLoaded', function(){
             'Doanh thu (VNĐ)': item.total
         }));
 
-        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Doanh Thu");
-        XLSX.writeFile(workbook, "Bao_cao_doanh_thu_thang.xlsx");
+        const worksheet = window.XLSX.utils.json_to_sheet(dataToExport, { header: ['Tháng', 'Doanh thu (VNĐ)'] });
+        const columnWidths = [{ wch: 15 }, { wch: 25 }]; // Độ rộng cho cột Tháng và Doanh thu
+        applyBasicTableStyles(worksheet, columnWidths);
+
+        const workbook = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(workbook, worksheet, "Doanh Thu");
+        window.XLSX.writeFile(workbook, "Bao_cao_doanh_thu_thang.xlsx");
+    });
+
+    // Logic xuất danh sách đơn hàng gần đây
+    document.getElementById('btnExportRecentOrders').addEventListener('click', function() {
+        if (!rawRecentOrders || rawRecentOrders.length === 0) {
+            return alert('Không có đơn hàng nào để xuất!');
+        }
+
+        const statusMap = {
+            0: 'Đã hủy',
+            1: 'Tiếp nhận',
+            2: 'Chuẩn bị',
+            3: 'Đang giao',
+            4: 'Hoàn thành'
+        };
+
+        // Map dữ liệu sang định dạng tiếng Việt và bao gồm thông tin khách hàng
+        const dataToExport = rawRecentOrders.map(order => ({
+            'Mã đơn hàng': order.code,
+            'Tên khách hàng': order.receiver,
+            'Số điện thoại': order.phoneContact || 'N/A',
+            'Địa chỉ giao hàng': order.addressShip || 'N/A',
+            'Tổng tiền (VNĐ)': order.totalprice,
+            'Trạng thái': statusMap[order.status] || 'Không xác định',
+            'Ngày tạo': new Date(order.createdAt).toLocaleString('vi-VN')
+        }));
+
+        const worksheet = window.XLSX.utils.json_to_sheet(dataToExport, { header: ['Mã đơn hàng', 'Tên khách hàng', 'Số điện thoại', 'Địa chỉ giao hàng', 'Tổng tiền (VNĐ)', 'Trạng thái', 'Ngày tạo'] });
+        const columnWidths = [{ wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 40 }, { wch: 20 }, { wch: 15 }, { wch: 25 }]; // Độ rộng cho các cột đơn hàng
+        applyBasicTableStyles(worksheet, columnWidths);
+
+        const workbook = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(workbook, worksheet, "Đơn hàng gần đây");
+        window.XLSX.writeFile(workbook, "Danh_sach_don_hang_gan_day.xlsx");
     });
 });
 </script>

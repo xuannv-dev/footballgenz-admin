@@ -13,7 +13,7 @@ const {
 } = require('../utils/adminDateFilter');
 const writeAuditLog =
     require('../utils/auditLog');
-
+// const { sendOrderRelatedEmail } = require('../utils/emailService');
 /* =====================================================
     ORDER STATUS FLOW
 ===================================================== */
@@ -607,7 +607,13 @@ router.get('/payment/pending', async (req, res) => {
             .limit(pageSize);
 
         const total = await Order.countDocuments(query);
-
+        console.log(
+            'PENDING ORDERS:',
+            orders.map(o => ({
+                code: o.code,
+                paymentStatus: o.paymentStatus
+            }))
+        );
         res.json({
             success: true,
             orders,
@@ -655,6 +661,7 @@ router.post('/payment/confirm/:orderCode', async (req, res) => {
         // Update payment status
         order.paymentStatus = PAYMENT_STATUS.CONFIRMED;
         order.paymentConfirmedAt = new Date();
+        order.rejectionReason = '';
         order.paymentConfirmedBy = req.session.passport?.user || 'admin';
         console.log('req.user =', req.user);
         console.log('req.session.passport =', req.session.passport);
@@ -664,6 +671,10 @@ router.post('/payment/confirm/:orderCode', async (req, res) => {
             req.session?.passport?.user
         );
         await order.save();
+        // sendOrderRelatedEmail(
+        //     order,
+        //     'PAYMENT_CONFIRMED'
+        // );
         await writeAuditLog({
 
             adminId:
@@ -709,10 +720,13 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
         }
 
         // Reset to awaiting
-        order.paymentStatus = PAYMENT_STATUS.AWAITING;
+        order.paymentStatus = PAYMENT_STATUS.REJECTED;
         order.paymentVerifications = [];
         order.note = (order.note || '') + `\n[REJECTED] ${reason || 'Không có lý do'}`;
-
+        order.rejectionReason =
+                reason || 'Không có lý do';
+        order.paymentRejectedAt = new Date();
+        order.paymentRejectedBy = req.session.passport?.user || 'admin';
         await order.save();
         await writeAuditLog({
 

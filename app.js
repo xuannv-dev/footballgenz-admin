@@ -68,6 +68,7 @@ app.use(cookieParser());
 app.use(flash());
 
 app.use(session({
+  name: 'footballgenz_admin',
   secret: process.env.SESSION_SECRET,
   resave:false,
   saveUninitialized:false
