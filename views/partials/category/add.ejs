@@ -13,15 +13,27 @@
         <!-- NAME -->
         <div class="form-group">
 
-            <label>
-                Tên danh mục
-            </label>
+            <label>Tên danh mục (Hiển thị cho khách hàng)</label>
+
+            <input
+                type="text"
+                id="name"
+                class="form-control"
+                placeholder="Ví dụ: Giày bóng đá"
+            >
+
+        </div>
+
+        <!-- GROUP -->
+        <div class="form-group">
+
+            <label>Mã danh mục (Dùng để liên kết với sản phẩm)</label>
 
             <input
                 type="text"
                 id="group"
                 class="form-control"
-                placeholder="Ví dụ: Giày đá bóng"
+                placeholder="Ví dụ: GIAY (Viết hoa không dấu)"
             >
 
         </div>
@@ -221,6 +233,9 @@ document
             'click',
             async function(e){
 
+    let name =
+        $('#name').val().trim();
+
     let group =
         $('#group').val().trim();
 
@@ -233,15 +248,17 @@ document
     let isActive =
         $('#isActive').val() === 'true';
 
-    if(!group){
+    if(!name || !group){
 
-        alert("Nhập tên danh mục");
+        alert("Vui lòng nhập Tên danh mục và Mã nhóm");
 
         return;
 
     }
 
     let data = {
+
+        name,
 
         group,
 

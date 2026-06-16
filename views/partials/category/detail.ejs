@@ -9,7 +9,22 @@
 
         <!-- NAME -->
         <div class="form-group">
-            <label>Tên danh mục *</label>
+            <label>Tên danh mục (Hiển thị cho khách hàng) *</label>
+
+            <div class="form-line">
+                <input
+                    type="text"
+                    id="name"
+                    class="form-control"
+                    value="<%= category.name || '' %>"
+                    required
+                >
+            </div>
+        </div>
+
+        <!-- GROUP -->
+        <div class="form-group">
+            <label>Mã danh mục (Liên kết với Sản phẩm) *</label>
 
             <div class="form-line">
                 <input
@@ -159,13 +174,14 @@ document.getElementById('btnUpload').addEventListener('click', async function() 
 
 // Update category
 async function updateCategory() {
+    const name = document.getElementById('name').value.trim();
     const group = document.getElementById('group').value.trim();
     const typeStr = document.getElementById('type').value.trim();
     const image = document.getElementById('image').value;
     const isActive = document.getElementById('isActive').value === 'true';
 
-    if (!group) {
-        alert("Tên danh mục không được để trống!");
+    if (!name || !group) {
+        alert("Tên danh mục và Mã nhóm không được để trống!");
         return;
     }
 
@@ -189,6 +205,7 @@ async function updateCategory() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                name,
                 group,
                 type,
                 image,
@@ -209,6 +226,10 @@ async function updateCategory() {
 }
 
 // Handle Enter key in inputs
+document.getElementById('name').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') updateCategory();
+});
+
 document.getElementById('group').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') updateCategory();
 });

@@ -48,7 +48,7 @@
             <select id="group" class="form-control order-status-select">
                 <% categories.forEach(c => { %>
                     <option value="<%= c.group %>" <%= product.group === c.group ? 'selected' : '' %>>
-                        <%= c.group %>
+                        <%= c.name || c.group %>
                     </option>
                 <% }) %>
             </select>

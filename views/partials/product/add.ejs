@@ -44,7 +44,7 @@
                     <select id="group" 
                             class="form-control order-status-select">
                         <% categories.forEach(c => { %>
-                            <option value="<%= c.group %>"><%= c.group %></option>
+                            <option value="<%= c.group %>"><%= c.name || c.group %></option>
                         <% }) %>
                     </select>
                 </div>

@@ -25,10 +25,10 @@ router.get('/', async function (req, res) {
     // 🔥 SEARCH
     if (keyword.trim() !== '') {
 
-        query.group = {
-            $regex: keyword,
-            $options: 'i'
-        };
+        query.$or = [
+            { name: { $regex: keyword, $options: 'i' } },
+            { group: { $regex: keyword, $options: 'i' } }
+        ];
 
     }
 
@@ -125,6 +125,8 @@ router.post('/add', async function (req, res) {
 
             code: getRandomString(6),
 
+            name: req.body.name,
+
             group: req.body.group,
 
             type: req.body.type,
@@ -156,7 +158,7 @@ router.put('/update/:id', async function (req, res) {
 
     try {
 
-        const newSlug = slugify(req.body.group, {
+        const newSlug = slugify(req.body.name, {
             lower: true,
             strict: true,
             locale: 'vi'
@@ -168,6 +170,8 @@ router.put('/update/:id', async function (req, res) {
 
             {
                 $set: {
+
+                    name: req.body.name,
 
                     group: req.body.group,
 
