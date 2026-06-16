@@ -300,11 +300,32 @@
 
         <div class="user-info">
 
-            <div class="image">
+            <div class="image dropdown">
 
                 <img
-                    src="/images/user.png"
-                    width="48">
+                    src="<%= user && user.avatar ? user.avatar : '/images/user.png' %>"
+                    width="48"
+                    id="adminAvatarImg"
+                    style="cursor: pointer; border-radius: 50%; object-fit: cover; height: 48px; width: 48px;"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+
+                <ul class="dropdown-menu" style="margin-top: 5px; min-width: 170px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <li>
+                        <a href="javascript:void(0);" onclick="viewAdminAvatar()" style="padding: 8px 15px; display: flex; align-items: center;">
+                            <i class="material-icons" style="font-size: 18px; margin-right: 8px;">visibility</i> Xem ảnh
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="document.getElementById('adminAvatarUpload').click()" style="padding: 8px 15px; display: flex; align-items: center;">
+                            <i class="material-icons" style="font-size: 18px; margin-right: 8px;">photo_camera</i> Đổi ảnh đại diện
+                        </a>
+                    </li>
+                </ul>
+
+                <input type="file" id="adminAvatarUpload" style="display: none;" accept="image/*">
 
             </div>
 
@@ -638,6 +659,58 @@
  <!-- <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.full.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js" integrity="sha256-07r59qSghMvl0iT/9oB/u5u0+jC2F4t/vS6Lq8V/G7M=" crossorigin="anonymous"></script> -->
+
+<script>
+    // Mở ảnh đại diện trong tab mới để xem
+    function viewAdminAvatar() {
+        const src = document.getElementById('adminAvatarImg').src;
+        window.open(src, '_blank');
+    }
+
+    // Bắt sự kiện chọn file và upload
+    document.getElementById('adminAvatarUpload').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', 'ADMIN/AVATAR'); // Lưu vào đúng thư mục yêu cầu
+
+        try {
+            // 1. Gửi ảnh lên Cloudinary
+            const res = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                const newAvatarUrl = data.url;
+                
+                // 2. Thay đổi ảnh hiển thị tức thì trên giao diện
+                document.getElementById('adminAvatarImg').src = newAvatarUrl;
+
+                // 3. Gửi request lưu URL ảnh mới vào Database (bạn cần có API này)
+                const userId = '<%= user ? user._id : "" %>';
+                if (userId) {
+                    await fetch(`/admin-user/update-avatar`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, avatar: newAvatarUrl })
+                    });
+                }
+            } else {
+                alert('❌ Upload ảnh thất bại: ' + (data.message || 'Lỗi không xác định'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('❌ Lỗi hệ thống khi cập nhật ảnh đại diện');
+        }
+        
+        // Đặt lại input để có thể chọn cùng 1 file ở lần sau
+        e.target.value = '';
+    });
+</script>
 
 </body>
 

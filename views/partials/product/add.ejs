@@ -12,7 +12,7 @@
                 <!-- NAME -->
                 <div class="form-group">
                     <label class="form-label">Tên sản phẩm</label>
-                    <input type="text" class="form-input" id="productname">
+                    <input type="text" class="form-control" id="productname">
                 </div>
 
                 <!-- CODE -->
@@ -24,7 +24,7 @@
                 <!-- PRICE -->
                 <div class="form-group">
                     <label class="form-label">Giá</label>
-                    <input type="number" class="form-input" id="price">
+                    <input type="number" class="form-control" id="price">
                 </div>
 
                 <!-- BRAND -->
@@ -64,8 +64,32 @@
 
                     <tbody>
                         <tr>
-                            <td><input type="text" class="form-control size"></td>
-                            <td><input type="text" class="form-control color"></td>
+                            <td>
+                                <select class="form-control size">
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                    <option value="43">43</option>
+                                    <option value="44">44</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control color">
+                                    <option value="Đỏ">Đỏ</option>
+                                    <option value="Xanh dương">Xanh dương</option>
+                                    <option value="Xanh lá">Xanh lá</option>
+                                    <option value="Vàng">Vàng</option>
+                                    <option value="Cam">Cam</option>
+                                    <option value="Tím">Tím</option>
+                                    <option value="Đen">Đen</option>
+                                    <option value="Trắng">Trắng</option>
+                                    <option value="Xám">Xám</option>
+                                    <option value="Hồng">Hồng</option>
+                                    <option value="Nâu">Nâu</option>
+                                </select>
+                            </td>
                             <td><input type="number" class="form-control stock" value="0"></td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-remove">X</button>
@@ -108,6 +132,49 @@
 
 window.addEventListener('load', function(){
 
+    // ================= DYNAMIC SIZE BY CATEGORY =================
+    function getSizeOptions(groupName) {
+        const group = (groupName || '').toUpperCase();
+        
+        if (group.includes('GIAY') || group.includes('GIÀY')) {
+            return `
+                <option value="38">38</option>
+                <option value="39">39</option>
+                <option value="40">40</option>
+                <option value="41">41</option>
+                <option value="42">42</option>
+                <option value="43">43</option>
+                <option value="44">44</option>
+            `;
+        } else if (group.includes('PHUKIEN') || group.includes('PHỤ KIỆN')) {
+            return `
+                <option value="Free Size">Free Size</option>
+                <option value="8">8 (Găng tay)</option>
+                <option value="9">9 (Găng tay)</option>
+                <option value="10">10 (Găng tay)</option>
+                <option value="Khác">Khác</option>
+            `;
+        } else {
+            // Mặc định cho Áo (AOCLB, AOQG, AOTRAINING...)
+            return `
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+            `;
+        }
+    }
+
+    $('#group').change(function() {
+        const currentGroup = $(this).val();
+        const optionsHtml = getSizeOptions(currentGroup);
+        $('.size').html(optionsHtml);
+    });
+
+    // Kích hoạt ngay lúc load để gán options phù hợp cho danh mục đang chọn ban đầu
+    $('#group').trigger('change');
+
     // ================= SUMMERNOTE =================
 
     $('#description').summernote({
@@ -123,23 +190,36 @@ window.addEventListener('load', function(){
 
     $('#addVariant').click(function () {
 
+        const currentGroup = $('#group').val();
+        const sizeOptionsHtml = getSizeOptions(currentGroup);
+
         $('#variantTable tbody').append(`
 
             <tr>
 
                 <td>
 
-                    <input
-                        type="text"
-                        class="form-control size">
+                    <select class="form-control size">
+                        ${sizeOptionsHtml}
+                    </select>
 
                 </td>
 
                 <td>
 
-                    <input
-                        type="text"
-                        class="form-control color">
+                    <select class="form-control color">
+                        <option value="Đỏ">Đỏ</option>
+                        <option value="Xanh dương">Xanh dương</option>
+                        <option value="Xanh lá">Xanh lá</option>
+                        <option value="Vàng">Vàng</option>
+                        <option value="Cam">Cam</option>
+                        <option value="Tím">Tím</option>
+                        <option value="Đen">Đen</option>
+                        <option value="Trắng">Trắng</option>
+                        <option value="Xám">Xám</option>
+                        <option value="Hồng">Hồng</option>
+                        <option value="Nâu">Nâu</option>
+                    </select>
 
                 </td>
 
@@ -216,7 +296,7 @@ window.addEventListener('load', function(){
             );
 
             formData.append(
-                'group',
+                'folder',
                 $('#group').val()
             );
 

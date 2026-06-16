@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const Category = require('../models/category');
+const slugify = require('slugify');
 
 const {
     applyDateRangeFilter,
@@ -155,6 +156,12 @@ router.put('/update/:id', async function (req, res) {
 
     try {
 
+        const newSlug = slugify(req.body.group, {
+            lower: true,
+            strict: true,
+            locale: 'vi'
+        });
+
         await Category.updateOne(
 
             { _id: req.params.id },
@@ -163,6 +170,8 @@ router.put('/update/:id', async function (req, res) {
                 $set: {
 
                     group: req.body.group,
+
+                    slug: newSlug,
 
                     type: req.body.type,
 

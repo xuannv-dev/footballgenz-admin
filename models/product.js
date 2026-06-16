@@ -42,7 +42,7 @@ const ProductSchema = new mongoose.Schema({
     },
     group: {
         type: String,
-        default: "GIAY"
+        required: true
     },
     description: {
         type: String,

@@ -45,8 +45,15 @@
         <!-- GROUP -->
         <div class="form-group">
             <label>Danh mục</label>
-
             <select id="group" class="form-control order-status-select">
+                <% categories.forEach(c => { %>
+                    <option value="<%= c.group %>" <%= product.group === c.group ? 'selected' : '' %>>
+                        <%= c.group %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <!-- <select id="group" class="form-control order-status-select">
 
                 <option
                     value="GIAY"
@@ -79,7 +86,7 @@
                 >
                     Phụ kiện
                 </option>
-            </select>
+            </select> -->
         </div>
 
         <!-- DESCRIPTION -->
@@ -174,19 +181,21 @@
                     <tr>
 
                         <td>
-                            <input
-                                type="text"
-                                class="form-control size"
-                                value="<%= v.size %>"
-                            >
+                            <select class="form-control size" data-selected="<%= v.size %>">
+                            </select>
                         </td>
 
                         <td>
-                            <input
-                                type="text"
-                                class="form-control color"
-                                value="<%= v.color %>"
-                            >
+                            <select class="form-control color">
+                                <% ['Đỏ', 'Xanh dương', 'Xanh lá', 'Vàng', 'Cam', 'Tím', 'Đen', 'Trắng', 'Xám', 'Hồng', 'Nâu'].forEach(function(c) { %>
+                                    <option value="<%= c %>" <%= v.color == c ? 'selected' : '' %>><%= c %></option>
+                                <% }); %>
+                                
+                                <!-- Giữ lại giá trị cũ nếu nó không nằm trong danh sách chuẩn -->
+                                <% if (!['Đỏ', 'Xanh dương', 'Xanh lá', 'Vàng', 'Cam', 'Tím', 'Đen', 'Trắng', 'Xám', 'Hồng', 'Nâu'].includes(v.color.toString())) { %>
+                                    <option value="<%= v.color %>" selected><%= v.color %></option>
+                                <% } %>
+                            </select>
                         </td>
 
                         <td>
@@ -274,6 +283,58 @@ window.addEventListener('load', function(){
 
     let uploadedImages = <%- JSON.stringify(product.images) %>;
 
+    // ================= DYNAMIC SIZE BY CATEGORY =================
+    function getSizeOptions(groupName, selectedSize = '') {
+        const group = (groupName || '').toUpperCase();
+        let html = '';
+        
+        if (group.includes('GIAY') || group.includes('GIÀY')) {
+            const sizes = ['38', '39', '40', '41', '42', '43', '44'];
+            sizes.forEach(s => {
+                html += `<option value="${s}" ${selectedSize == s ? 'selected' : ''}>${s}</option>`;
+            });
+            if (selectedSize && !sizes.includes(selectedSize.toString())) {
+                 html += `<option value="${selectedSize}" selected>${selectedSize}</option>`;
+            }
+        } else if (group.includes('PHUKIEN') || group.includes('PHỤ KIỆN')) {
+            const sizes = ['Free Size', '8', '9', '10', 'Khác'];
+            const labels = {'Free Size': 'Free Size', '8': '8 (Găng tay)', '9': '9 (Găng tay)', '10': '10 (Găng tay)', 'Khác': 'Khác'};
+            sizes.forEach(s => {
+                html += `<option value="${s}" ${selectedSize == s ? 'selected' : ''}>${labels[s]}</option>`;
+            });
+            if (selectedSize && !sizes.includes(selectedSize.toString())) {
+                 html += `<option value="${selectedSize}" selected>${selectedSize}</option>`;
+            }
+        } else {
+            // Mặc định cho Áo (AOCLB, AOQG, AOTRAINING...)
+            const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+            sizes.forEach(s => {
+                html += `<option value="${s}" ${selectedSize == s ? 'selected' : ''}>${s}</option>`;
+            });
+            if (selectedSize && !sizes.includes(selectedSize.toString())) {
+                 html += `<option value="${selectedSize}" selected>${selectedSize}</option>`;
+            }
+        }
+        return html;
+    }
+
+    function renderSizes() {
+        const currentGroup = $('#group').val();
+        $('.size').each(function() {
+            const selected = $(this).attr('data-selected') || $(this).val();
+            const optionsHtml = getSizeOptions(currentGroup, selected);
+            $(this).html(optionsHtml);
+            $(this).removeAttr('data-selected'); 
+        });
+    }
+
+    $('#group').change(function() {
+        renderSizes();
+    });
+
+    // Kích hoạt lần đầu để render size cho các biến thể có sẵn
+    renderSizes();
+
     // ================= REMOVE IMAGE =================
 
     $(document).on('click','.remove-image',function(){
@@ -286,22 +347,33 @@ window.addEventListener('load', function(){
 
     $('#btn-add-variant').click(function(){
 
+        const currentGroup = $('#group').val();
+        const sizeOptionsHtml = getSizeOptions(currentGroup);
+
         $('#variant-body').append(`
 
             <tr>
 
                 <td>
-                    <input
-                        type="text"
-                        class="form-control size"
-                    >
+                    <select class="form-control size">
+                        ${sizeOptionsHtml}
+                    </select>
                 </td>
 
                 <td>
-                    <input
-                        type="text"
-                        class="form-control color"
-                    >
+                    <select class="form-control color">
+                        <option value="Đỏ">Đỏ</option>
+                        <option value="Xanh dương">Xanh dương</option>
+                        <option value="Xanh lá">Xanh lá</option>
+                        <option value="Vàng">Vàng</option>
+                        <option value="Cam">Cam</option>
+                        <option value="Tím">Tím</option>
+                        <option value="Đen">Đen</option>
+                        <option value="Trắng">Trắng</option>
+                        <option value="Xám">Xám</option>
+                        <option value="Hồng">Hồng</option>
+                        <option value="Nâu">Nâu</option>
+                    </select>
                 </td>
 
                 <td>
@@ -350,7 +422,7 @@ window.addEventListener('load', function(){
             formData.append('file',file);
 
             formData.append(
-                'group',
+                'folder',
                 $('#group').val()
             );
 

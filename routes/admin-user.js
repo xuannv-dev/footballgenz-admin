@@ -178,5 +178,42 @@ router.put('/active/:id', async function (req, res) {
     }
 
 });
+/* =====================================================
+    UPDATE AVATAR
+===================================================== */
+router.post('/update-avatar', async function(req, res) {
+    try {
+        // Lấy thông tin được gửi lên từ fetch() ở Frontend
+        const { userId, avatar } = req.body;
 
+        if (!userId || !avatar) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Thiếu thông tin người dùng hoặc link ảnh' 
+            });
+        }
+
+        // 1. Cập nhật đường dẫn ảnh mới vào Database cho User đó
+        await User.findByIdAndUpdate(userId, { avatar: avatar });
+
+        // 2. Cập nhật lại ảnh trong Session hiện tại để không bị mất khi load lại trang
+        // (Tuỳ thuộc vào cách bạn lưu Session đăng nhập, hãy điều chỉnh lại object cho đúng. 
+        // Ví dụ: req.session.user, req.session.admin hoặc req.session.passport.user...)
+        if (req.session && req.session.user) {
+            req.session.user.avatar = avatar;
+        }
+
+        return res.json({ 
+            success: true, 
+            message: 'Cập nhật ảnh đại diện thành công' 
+        });
+
+    } catch (error) {
+        console.error('Lỗi lưu avatar:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Lỗi hệ thống khi cập nhật Database' 
+        });
+    }
+});
 module.exports = router;

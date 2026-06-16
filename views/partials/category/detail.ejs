@@ -111,6 +111,10 @@ document.getElementById('btnUpload').addEventListener('click', async function() 
 
     const formData = new FormData();
     formData.append("file", file);
+    
+    // Lấy tên danh mục hiện tại để tạo thư mục lưu ảnh
+    const groupName = document.getElementById('group').value.trim() || 'KHAC';
+    formData.append("group", 'CATEGORY/' + groupName);
 
     try {
         const response = await fetch("/upload", {
