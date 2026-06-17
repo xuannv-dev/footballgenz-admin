@@ -400,6 +400,21 @@ router.put(
 
             await order.save();
 
+            // ================= RESTORE STOCK IF CANCELLED =================
+            if (newStatus === 0 && currentStatus !== 0) {
+                for (const item of order.products) {
+                    await Product.updateOne(
+                        {
+                            productCode: item.productCode,
+                            variants: { $elemMatch: { size: item.size, color: item.color } }
+                        },
+                        {
+                            $inc: { 'variants.$.stock': item.quantity } // Hoàn lại tồn kho
+                        }
+                    );
+                }
+            }
+
             // Bắn event gửi email thông báo trạng thái đơn hàng
             let emailType = null;
             switch(newStatus) {
@@ -746,6 +761,10 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
                 reason || 'Không có lý do';
         order.paymentRejectedAt = new Date();
         order.paymentRejectedBy = req.session.passport?.user || 'admin';
+
+        // 🔥 GIA HẠN DEADLINE THÊM 24 GIỜ (Cho khách thời gian gửi lại minh chứng)
+        order.paymentDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
         await order.save();
 
         // Đẩy lệnh gửi email thanh toán thất bại vào Redis Queue

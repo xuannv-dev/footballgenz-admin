@@ -165,6 +165,8 @@ const statusMap = {
 
                     <th>Tổng tiền</th>
 
+                    <th>Loại thanh toán</th>
+
                     <th>Trạng thái</th>
 
                     <th width="260">
@@ -227,6 +229,22 @@ const statusMap = {
                             <%= numberWithCommas(
                                 order.totalprice
                             ) %>₫
+
+                        </td>
+
+                        <!-- PAYMENT TYPE -->
+
+                        <td>
+
+                            <% if(order.typePay === 1) { %>
+
+                                <span class="label bg-deep-purple">Chuyển khoản</span>
+
+                            <% } else { %>
+
+                                <span class="label bg-teal">COD</span>
+
+                            <% } %>
 
                         </td>
 
