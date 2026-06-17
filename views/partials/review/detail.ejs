@@ -309,15 +309,14 @@
                     <!-- BUTTON -->
 
                     <button
-
-                        type="submit"
-
+                        type="button"
+                        id="btnSaveReview"
+                        onclick="updateReview()"
                         class="btn btn-success">
 
                         Lưu thay đổi
 
                     </button>
-
                     <a
 
                         href="/review"
@@ -337,3 +336,51 @@
     </div>
 
 </div>
+<script>
+
+async function updateReview() {
+
+    const formData = {
+
+        isActive:
+            $('select[name="isActive"]').val(),
+
+        adminNote:
+            $('textarea[name="adminNote"]').val()
+
+    };
+
+    $.ajax({
+
+        url:
+            '/review/update/<%= review._id %>',
+
+        type:
+            'POST',
+
+        data:
+            formData,
+
+        success:function(res){
+
+            alert(res.message);
+
+            window.location =
+                '/review';
+
+                },
+
+        error:function(xhr){
+
+            alert(
+                xhr.responseJSON?.message ||
+                'Cập nhật thất bại'
+            );
+
+        }
+
+    });
+
+}
+
+</script>

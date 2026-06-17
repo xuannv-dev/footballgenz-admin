@@ -8,7 +8,8 @@ const {
     applyDateRangeFilter,
     buildQueryString
 } = require('../utils/adminDateFilter');
-
+const writeAuditLog =
+    require('../utils/auditLog');
 /* =====================================================
     LIST REVIEW
 ===================================================== */
@@ -204,21 +205,28 @@ router.post(
                                 `Cập nhật đánh giá ${req.params.id}`
             
                         });
-            res.send(
-                'Cập nhật trạng thái thành công!'
-            );
-            res.redirect(
-                '/review'
-            );
 
+            return res.json({
+
+                success:true,
+
+                message:
+                    'Cập nhật trạng thái thành công!'
+
+            });
         }
-        catch (err) {
+        catch(err) {
 
             console.log(err);
 
-            res.send(
-                'Cập nhật trạng thái thất bại!'
-            );
+            return res.status(500).json({
+
+                success:false,
+
+                message:
+                    'Cập nhật trạng thái thất bại!'
+
+            });
 
         }
 

@@ -764,6 +764,7 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
 
         // 🔥 GIA HẠN DEADLINE THÊM 24 GIỜ (Cho khách thời gian gửi lại minh chứng)
         order.paymentDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        order.markModified('paymentDeadline');
 
         await order.save();
 
