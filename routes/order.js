@@ -13,7 +13,7 @@ const {
 } = require('../utils/adminDateFilter');
 const writeAuditLog =
     require('../utils/auditLog');
-// const { sendOrderRelatedEmail } = require('../utils/emailService');
+const { sendOrderRelatedEmail } = require('../utils/emailService');
 /* =====================================================
     ORDER STATUS FLOW
 ===================================================== */
@@ -399,6 +399,25 @@ router.put(
                 newStatus;
 
             await order.save();
+
+            // Bắn event gửi email thông báo trạng thái đơn hàng
+            let emailType = null;
+            switch(newStatus) {
+                case 0:
+                    emailType = 'ORDER_CANCELLED';
+                    break;
+                case 2:
+                    emailType = 'ORDER_PREPARING';
+                    break;
+                case 3:
+                    emailType = 'ORDER_SHIPPING';
+                    break;
+                case 4:
+                    emailType = 'ORDER_COMPLETED';
+                    break;
+            }
+            if (emailType) sendOrderRelatedEmail(order, emailType);
+
             await writeAuditLog({
 
                 adminId:
@@ -671,10 +690,10 @@ router.post('/payment/confirm/:orderCode', async (req, res) => {
             req.session?.passport?.user
         );
         await order.save();
-        // sendOrderRelatedEmail(
-        //     order,
-        //     'PAYMENT_CONFIRMED'
-        // );
+
+        // Đẩy lệnh gửi email thanh toán thành công vào Redis Queue
+        sendOrderRelatedEmail(order, 'PAYMENT_CONFIRMED');
+
         await writeAuditLog({
 
             adminId:
@@ -728,6 +747,10 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
         order.paymentRejectedAt = new Date();
         order.paymentRejectedBy = req.session.passport?.user || 'admin';
         await order.save();
+
+        // Đẩy lệnh gửi email thanh toán thất bại vào Redis Queue
+        sendOrderRelatedEmail(order, 'PAYMENT_REJECTED');
+
         await writeAuditLog({
 
             adminId:
