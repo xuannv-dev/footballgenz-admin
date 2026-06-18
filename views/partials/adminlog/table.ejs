@@ -229,7 +229,27 @@
 
                                             XÓA SẢN PHẨM
 
-                                        </span>    
+                                        </span>   
+                                    <% } else if(
+                                        log.action ===
+                                        'UPDATE_REVIEW'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-orange">
+                                                CẬP NHẬT ĐÁNH GIÁ
+
+                                        </span>  
+                                    <% } else if(
+                                        log.action ===
+                                        'APPROVE_RETURN'
+                                    ){ %>
+
+                                        <span
+                                            class="badge bg-orange">
+                                                DUYỆT YÊU CẦU TRẢ HÀNG             
+
+                                        </span>      
                                     <% } else { %>
 
                                         <span

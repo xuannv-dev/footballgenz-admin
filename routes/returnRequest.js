@@ -29,6 +29,7 @@ const {
 
 const writeAuditLog =
     require('../utils/auditLog');
+const { sendOrderRelatedEmail } = require('../utils/emailService');
 /* =====================================================
     LIST RETURN REQUEST
 ===================================================== */
@@ -382,6 +383,24 @@ router.post(
                 }
 
             }
+
+            /* =========================================
+                SEND EMAIL NOTIFICATION
+            ========================================= */
+            const order = await Order.findOne({ code: request.orderCode });
+            if (order) {
+                // Gắn thêm ghi chú của admin vào order object để Worker bên Customer lấy được
+                order.adminNote = request.adminNote || 'Không có';
+                
+                if (newStatus === 2) {
+                    sendOrderRelatedEmail(order, 'RETURN_APPROVED');
+                } else if (newStatus === 3) {
+                    sendOrderRelatedEmail(order, 'RETURN_REJECTED');
+                } else if (newStatus === 4) {
+                    sendOrderRelatedEmail(order, 'RETURN_COMPLETED');
+                }
+            }
+
             await writeAuditLog({
 
                 adminId:
@@ -400,18 +419,14 @@ router.post(
                     `Xác nhận yêu cầu trả hàng ${request._id}`
 
             });
-            res.send(
-                'Cập nhật trạng thái thành công!'
-            );
+            return res.json({ success: true, message: 'Cập nhật trạng thái thành công!' });
 
         }
         catch(err){
 
             console.log(err);
 
-            res.send(
-                'Cập nhật trạng thái thất bại!'
-            );
+            return res.status(500).json({ success: false, message: 'Cập nhật trạng thái thất bại!' });
 
         }
 

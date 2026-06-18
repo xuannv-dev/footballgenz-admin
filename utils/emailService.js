@@ -118,7 +118,8 @@ const sendEmail = async (to, subject, bodyHtml, type = 'GENERIC', data = {}) => 
  * Bạn truyền tham số order và loại hành động (vd: PAYMENT_CONFIRMED, REJECTED) vào đây.
  */
 const sendOrderRelatedEmail = async (order, type) => {
-    const isCustomerType = ['ORDER_CREATED','PAYMENT_SUBMITTED','PAYMENT_CONFIRMED','SUCCESS', 'CANCELLED_TIMEOUT', 'REJECTED', 'PAYMENT_REJECTED', 'ORDER_PREPARING', 'ORDER_SHIPPING', 'ORDER_COMPLETED', 'ORDER_CANCELLED'].includes(type);
+    const isCustomerType = ['ORDER_CREATED','PAYMENT_SUBMITTED','PAYMENT_CONFIRMED','SUCCESS', 'CANCELLED_TIMEOUT', 'REJECTED', 'PAYMENT_REJECTED', 
+        'ORDER_PREPARING', 'ORDER_SHIPPING', 'ORDER_COMPLETED', 'ORDER_CANCELLED', 'RETURN_APPROVED' , 'RETURN_REJECTED' ,'RETURN_COMPLETED'].includes(type);
     
     if (isCustomerType && (!order.creator || order.creator === 'anonymous' || !order.creator.includes('@'))) {
         console.log(`[EMAIL ADMIN] Bỏ qua lệnh gửi mail ${type} cho đơn #${order.code}: Email khách không hợp lệ.`);

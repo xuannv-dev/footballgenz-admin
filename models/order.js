@@ -112,7 +112,16 @@ const OrderSchema = new mongoose.Schema({
     }],
 
     paymentConfirmedAt: Date,
-    paymentConfirmedBy: String
+    paymentConfirmedBy: String,
+    paymentDeadline: Date,  // Deadline thanh toán (ví dụ: 5 phút từ khi tạo thanh toán lần 1, nếu bị từ chối thì sẽ reset lại deadline là 24h từ thời điểm bị từ chối)
+
+    verificationDetails: {
+        accountNumber: String,    // Số tài khoản (admin nhập)
+        accountHolder: String,    // Tên chủ TK (admin nhập)
+        bankName: String,         // Ngân hàng (admin nhập)
+        transferTimestamp: Date,  // Thời gian chuyển khoản (admin nhập)
+        adminNotes: String        // Ghi chú của admin
+    }
 
 }, { timestamps: true });
 

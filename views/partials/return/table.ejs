@@ -559,12 +559,11 @@ async function saveReturn(id){
 
             );
 
-        const result =
-            await response.text();
+        const result = await response.json();
 
-        alert(result);
+        alert(result.message);
 
-        if(result.includes('success')){
+        if(result.success){
 
             setTimeout(() => {
 
@@ -580,7 +579,7 @@ async function saveReturn(id){
         console.log(err);
 
         alert(
-            'Update failed'
+            'Cập nhật thất bại. Vui lòng thử lại.'
         );
 
     }

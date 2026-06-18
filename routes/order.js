@@ -753,23 +753,28 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Đơn hàng không tồn tại' });
         }
 
-        // Reset to awaiting
-        order.paymentStatus = PAYMENT_STATUS.REJECTED;
-        order.paymentVerifications = [];
-        order.note = (order.note || '') + `\n[REJECTED] ${reason || 'Không có lý do'}`;
-        order.rejectionReason =
-                reason || 'Không có lý do';
-        order.paymentRejectedAt = new Date();
-        order.paymentRejectedBy = req.session.passport?.user || 'admin';
-
         // 🔥 GIA HẠN DEADLINE THÊM 24 GIỜ (Cho khách thời gian gửi lại minh chứng)
-        order.paymentDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        order.markModified('paymentDeadline');
+        const newDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-        await order.save();
+        // Sử dụng findOneAndUpdate để đảm bảo Database được cập nhật chính xác tuyệt đối
+        const updatedOrder = await Order.findOneAndUpdate(
+            { code: orderCode },
+            {
+                $set: {
+                    paymentStatus: PAYMENT_STATUS.REJECTED,
+                    paymentVerifications: [],
+                    note: (order.note || '') + `\n[REJECTED] ${reason || 'Không có lý do'}`,
+                    rejectionReason: reason || 'Không có lý do',
+                    paymentRejectedAt: new Date(),
+                    paymentRejectedBy: req.session.passport?.user || 'admin',
+                    paymentDeadline: newDeadline
+                }
+            },
+            { new: true } // Trả về document mới sau khi cập nhật
+        );
 
         // Đẩy lệnh gửi email thanh toán thất bại vào Redis Queue
-        sendOrderRelatedEmail(order, 'PAYMENT_REJECTED');
+        sendOrderRelatedEmail(updatedOrder || order, 'PAYMENT_REJECTED');
 
         await writeAuditLog({
 
@@ -792,7 +797,7 @@ router.post('/payment/reject/:orderCode', async (req, res) => {
         res.json({
             success: true,
             message: 'Đã từ chối xác nhận thanh toán',
-            paymentStatus: order.paymentStatus
+            paymentStatus: PAYMENT_STATUS.REJECTED
         });
     } catch (error) {
         console.error('[REJECT PAYMENT]', error);
